@@ -1,0 +1,16 @@
+{
+  "short_name": "Help The Children",
+  "name": "Help The Children SKD",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#2f73cf",
+  "background_color": "#ffffff"
+}

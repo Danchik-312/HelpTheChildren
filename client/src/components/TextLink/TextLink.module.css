@@ -1,0 +1,7 @@
+.link { position: relative; display: inline-block; padding-block: 8px; transition: color var(--transition-default); }
+.link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 3px; background: var(--color-primary); transform: scaleX(0); transform-origin: left; transition: transform 300ms ease-in; }
+.link:focus-visible::after { transform: scaleX(1); }
+@media (hover: hover) and (pointer: fine) { .link:hover::after { transform: scaleX(1); } }
+.light { color: var(--color-on-primary); }
+.light::after { background: var(--color-on-primary); }
+@media (prefers-reduced-motion: reduce) { .link, .link::after { transition: none; } }

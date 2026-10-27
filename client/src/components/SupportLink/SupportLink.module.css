@@ -1,0 +1,10 @@
+.link { position: fixed; z-index: 8; bottom: 32px; right: max(32px, calc((100vw - var(--container-width)) / 2)); display: flex; align-items: center; gap: 14px; background: var(--color-background); border-radius: var(--radius-pill); box-shadow: 0 0 24px var(--color-shadow); padding: 16px 24px; transition: color var(--transition-default); }
+.link:focus-visible { color: var(--color-primary); }
+.plus { width: 22px; height: 22px; position: relative; }
+.plus::before, .plus::after { content: ''; position: absolute; background: var(--color-primary); }
+.plus::before { width: 22px; height: 1px; top: 10px; }
+.plus::after { width: 1px; height: 22px; left: 10px; }
+@media (hover: hover) and (pointer: fine) {
+  .link:hover { color: var(--color-primary); }
+}
+@media (max-width: 767px) { .link { display: none; } }

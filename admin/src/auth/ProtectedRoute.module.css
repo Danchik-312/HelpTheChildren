@@ -1,0 +1,4 @@
+.screen { min-height: 100vh; display: grid; place-content: center; gap: 14px; justify-items: center; color: var(--color-muted); }
+.spinner { width: 34px; height: 34px; border: 3px solid var(--color-primary-soft); border-top-color: var(--color-primary); border-radius: 50%; animation: spin .75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }

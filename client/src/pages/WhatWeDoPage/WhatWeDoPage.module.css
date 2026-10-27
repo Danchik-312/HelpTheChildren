@@ -1,0 +1,2 @@
+.tabs { padding-block: 6px 52px; }
+@media (max-width: 767px) { .tabs { padding-block: 14px 40px; overflow-x: auto; } }

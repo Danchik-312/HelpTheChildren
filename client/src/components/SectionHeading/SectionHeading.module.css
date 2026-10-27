@@ -1,0 +1,8 @@
+.heading { max-width: 800px; }
+.title { font-size: var(--font-title); line-height: var(--line-title); letter-spacing: -.04em; }
+.description { margin-top: 33px; font-size: var(--font-lead); line-height: var(--line-lead); letter-spacing: -.02em; }
+.light { color: var(--color-on-primary); }
+.compact { max-width: 592px; }
+@media (max-width: 1279px) { .description { margin-top: 48px; } }
+@media (max-width: 1023px) { .description { margin-top: 32px; } }
+@media (max-width: 767px) { .title { letter-spacing: -.02em; } .description { margin-top: 21px; } }

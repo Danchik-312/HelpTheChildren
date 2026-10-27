@@ -1,0 +1,555 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  EDITOR
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum ContentArea {
+  PUBLICATIONS
+  STORIES
+  CHILDREN
+  PROJECTS
+  PAGES
+  HERO
+  MEDIA
+  SITE
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PublicationKind {
+  NEWS
+  ARTICLE
+}
+
+enum ProjectKind {
+  PROJECT
+  PROGRAM
+  INITIATIVE
+}
+
+enum ProjectState {
+  PLANNED
+  ACTIVE
+  COMPLETED
+}
+
+enum InfoPageGroup {
+  ABOUT
+  GIVE_HELP
+  GET_HELP
+  GENERAL
+}
+
+enum MediaKind {
+  IMAGE
+  VIDEO
+  DOCUMENT
+  EXTERNAL_VIDEO
+}
+
+enum MediaStatus {
+  PROCESSING
+  READY
+  REJECTED
+}
+
+enum MediaVisibility {
+  PRIVATE
+  PUBLIC
+}
+
+enum PrivacyReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REVOKED
+}
+
+enum ConsentStatus {
+  PENDING
+  APPROVED
+  REVOKED
+  EXPIRED
+}
+
+enum ContactType {
+  PHONE
+  EMAIL
+  ADDRESS
+  HOURS
+  SOCIAL
+  OTHER
+}
+
+model User {
+  id                      String                  @id @default(uuid()) @db.Uuid
+  email                   String                  @unique
+  passwordHash            String
+  displayName             String
+  role                    UserRole                @default(EDITOR)
+  status                  UserStatus              @default(ACTIVE)
+  lastLoginAt             DateTime?
+  createdAt               DateTime                @default(now())
+  updatedAt               DateTime                @updatedAt
+  sessions                Session[]
+  permissions             UserContentPermission[]
+  auditLogs               AuditLog[]              @relation("AuditActor")
+  createdMedia            MediaAsset[]            @relation("MediaCreator")
+  approvedMedia           MediaAsset[]            @relation("MediaApprover")
+  createdPublications     Publication[]           @relation("PublicationCreator")
+  updatedPublications     Publication[]           @relation("PublicationUpdater")
+  publishedPublications   Publication[]           @relation("PublicationPublisher")
+  createdStories          Story[]                 @relation("StoryCreator")
+  updatedStories          Story[]                 @relation("StoryUpdater")
+  publishedStories        Story[]                 @relation("StoryPublisher")
+  createdChildren         ChildProfile[]          @relation("ChildCreator")
+  updatedChildren         ChildProfile[]          @relation("ChildUpdater")
+  publishedChildren       ChildProfile[]          @relation("ChildPublisher")
+  privacyApprovedChildren ChildProfile[]          @relation("ChildPrivacyApprover")
+  verifiedConsents        ConsentRecord[]         @relation("ConsentVerifier")
+  createdProjects         Project[]               @relation("ProjectCreator")
+  updatedProjects         Project[]               @relation("ProjectUpdater")
+  publishedProjects       Project[]               @relation("ProjectPublisher")
+  createdPages            InfoPage[]              @relation("PageCreator")
+  updatedPages            InfoPage[]              @relation("PageUpdater")
+  publishedPages          InfoPage[]              @relation("PagePublisher")
+  createdSlides           HeroSlide[]             @relation("HeroCreator")
+  updatedSlides           HeroSlide[]             @relation("HeroUpdater")
+  publishedSlides         HeroSlide[]             @relation("HeroPublisher")
+  updatedOrganization     OrganizationProfile[]
+  updatedContacts         ContactEntry[]
+  updatedBlocks           HomeBlock[]
+}
+
+model Session {
+  id         String    @id @default(uuid()) @db.Uuid
+  userId     String    @db.Uuid
+  tokenHash  String    @unique
+  csrfHash   String
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  lastSeenAt DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@index([expiresAt, revokedAt])
+}
+
+model UserContentPermission {
+  userId     String      @db.Uuid
+  area       ContentArea
+  canPublish Boolean     @default(false)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, area])
+}
+
+model AuditLog {
+  id         BigInt   @id @default(autoincrement())
+  actorId    String?  @db.Uuid
+  action     String
+  entityType String
+  entityId   String?
+  summary    String?
+  requestId  String?
+  createdAt  DateTime @default(now())
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}
+
+model MediaAsset {
+  id                 String             @id @default(uuid()) @db.Uuid
+  kind               MediaKind
+  status             MediaStatus        @default(PROCESSING)
+  visibility         MediaVisibility    @default(PRIVATE)
+  storageKey         String?            @unique
+  externalUrl        String?
+  originalName       String?
+  mimeType           String
+  extension          String?
+  sizeBytes          BigInt?
+  checksum           String?
+  width              Int?
+  height             Int?
+  durationMs         Int?
+  defaultAlt         String?
+  caption            String?
+  credit             String?
+  rightsConfirmed    Boolean            @default(false)
+  createdById        String             @db.Uuid
+  publicApprovedAt   DateTime?
+  publicApprovedById String?            @db.Uuid
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  deletedAt          DateTime?
+  createdBy          User               @relation("MediaCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  publicApprovedBy   User?              @relation("MediaApprover", fields: [publicApprovedById], references: [id], onDelete: SetNull)
+  publicationCovers  Publication[]      @relation("PublicationCover")
+  storyCovers        Story[]            @relation("StoryCover")
+  childCovers        ChildProfile[]     @relation("ChildCover")
+  projectCovers      Project[]          @relation("ProjectCover")
+  pageCovers         InfoPage[]         @relation("PageCover")
+  heroMedia          HeroSlide[]        @relation("HeroMedia")
+  heroPosters        HeroSlide[]        @relation("HeroPoster")
+  publicationLinks   PublicationMedia[]
+  storyLinks         StoryMedia[]
+  childLinks         ChildMedia[]
+  projectLinks       ProjectMedia[]
+  pageInlineMedia    InfoPageInlineMedia[]
+
+  @@index([status, visibility, deletedAt])
+  @@index([createdAt])
+}
+
+model Publication {
+  id            String                @id @default(uuid()) @db.Uuid
+  kind          PublicationKind
+  slug          String                @unique
+  title         String
+  excerpt       String
+  body          Json
+  coverMediaId  String?               @db.Uuid
+  status        ContentStatus         @default(DRAFT)
+  publishedAt   DateTime?
+  publishedById String?               @db.Uuid
+  createdById   String                @db.Uuid
+  updatedById   String                @db.Uuid
+  version       Int                   @default(1)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  deletedAt     DateTime?
+  coverMedia    MediaAsset?           @relation("PublicationCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  createdBy     User                  @relation("PublicationCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy     User                  @relation("PublicationUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+  publishedBy   User?                 @relation("PublicationPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  categories    PublicationCategory[]
+  media         PublicationMedia[]
+
+  @@index([kind, status, publishedAt])
+  @@index([status, publishedAt])
+  @@index([deletedAt, status])
+}
+
+model Category {
+  id           String                @id @default(uuid()) @db.Uuid
+  slug         String                @unique
+  name         String
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+  publications PublicationCategory[]
+}
+
+model PublicationCategory {
+  publicationId String      @db.Uuid
+  categoryId    String      @db.Uuid
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  category      Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([publicationId, categoryId])
+  @@index([categoryId, publicationId])
+}
+
+model PublicationMedia {
+  publicationId String      @db.Uuid
+  mediaId       String      @db.Uuid
+  position      Int         @default(0)
+  altText       String?
+  caption       String?
+  publication   Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  media         MediaAsset  @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([publicationId, mediaId])
+  @@index([publicationId, position])
+}
+
+model Story {
+  id                   String        @id @default(uuid()) @db.Uuid
+  slug                 String        @unique
+  title                String
+  excerpt              String
+  body                 Json
+  coverMediaId         String?       @db.Uuid
+  status               ContentStatus @default(DRAFT)
+  consentConfirmedAt   DateTime?
+  consentConfirmedById String?       @db.Uuid
+  publishedAt          DateTime?
+  publishedById        String?       @db.Uuid
+  createdById          String        @db.Uuid
+  updatedById          String        @db.Uuid
+  version              Int           @default(1)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+  deletedAt            DateTime?
+  coverMedia           MediaAsset?   @relation("StoryCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  createdBy            User          @relation("StoryCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy            User          @relation("StoryUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+  publishedBy          User?         @relation("StoryPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  media                StoryMedia[]
+
+  @@index([status, publishedAt])
+  @@index([deletedAt, status])
+}
+
+model StoryMedia {
+  storyId  String     @db.Uuid
+  mediaId  String     @db.Uuid
+  position Int        @default(0)
+  altText  String?
+  caption  String?
+  story    Story      @relation(fields: [storyId], references: [id], onDelete: Cascade)
+  media    MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([storyId, mediaId])
+  @@index([storyId, position])
+}
+
+model ChildProfile {
+  id                    String              @id @default(uuid()) @db.Uuid
+  slug                  String              @unique
+  publicDisplayName     String
+  title                 String
+  summary               String
+  storyBody             Json
+  publicAgeLabel        String?
+  approvedHealthSummary String?
+  supportReason         String
+  coverMediaId          String?             @db.Uuid
+  status                ContentStatus       @default(DRAFT)
+  privacyReviewStatus   PrivacyReviewStatus @default(PENDING)
+  privacyApprovedAt     DateTime?
+  privacyApprovedById   String?             @db.Uuid
+  sortOrder             Int                 @default(0)
+  publishedAt           DateTime?
+  publishedById         String?             @db.Uuid
+  createdById           String              @db.Uuid
+  updatedById           String              @db.Uuid
+  version               Int                 @default(1)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  deletedAt             DateTime?
+  coverMedia            MediaAsset?         @relation("ChildCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  createdBy             User                @relation("ChildCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy             User                @relation("ChildUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+  publishedBy           User?               @relation("ChildPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  privacyApprovedBy     User?               @relation("ChildPrivacyApprover", fields: [privacyApprovedById], references: [id], onDelete: SetNull)
+  consents              ConsentRecord[]
+  media                 ChildMedia[]
+
+  @@index([status, privacyReviewStatus, sortOrder])
+  @@index([deletedAt, status])
+}
+
+model ConsentRecord {
+  id            String        @id @default(uuid()) @db.Uuid
+  childId       String        @db.Uuid
+  status        ConsentStatus @default(PENDING)
+  scope         Json
+  referenceCode String?
+  obtainedAt    DateTime?
+  expiresAt     DateTime?
+  revokedAt     DateTime?
+  verifiedById  String?       @db.Uuid
+  verifiedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  child         ChildProfile  @relation(fields: [childId], references: [id], onDelete: Cascade)
+  verifiedBy    User?         @relation("ConsentVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+
+  @@index([childId, status])
+  @@index([status, expiresAt])
+}
+
+model ChildMedia {
+  childId         String       @db.Uuid
+  mediaId         String       @db.Uuid
+  position        Int          @default(0)
+  altText         String?
+  caption         String?
+  consentApproved Boolean      @default(false)
+  child           ChildProfile @relation(fields: [childId], references: [id], onDelete: Cascade)
+  media           MediaAsset   @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([childId, mediaId])
+  @@index([childId, position])
+}
+
+model Project {
+  id            String         @id @default(uuid()) @db.Uuid
+  kind          ProjectKind
+  projectState  ProjectState   @default(PLANNED)
+  slug          String         @unique
+  title         String
+  summary       String
+  body          Json
+  coverMediaId  String?        @db.Uuid
+  startsAt      DateTime?
+  endsAt        DateTime?
+  status        ContentStatus  @default(DRAFT)
+  sortOrder     Int            @default(0)
+  publishedAt   DateTime?
+  publishedById String?        @db.Uuid
+  createdById   String         @db.Uuid
+  updatedById   String         @db.Uuid
+  version       Int            @default(1)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  coverMedia    MediaAsset?    @relation("ProjectCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  createdBy     User           @relation("ProjectCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy     User           @relation("ProjectUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+  publishedBy   User?          @relation("ProjectPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  media         ProjectMedia[]
+
+  @@index([kind, status, sortOrder])
+  @@index([status, publishedAt])
+}
+
+model ProjectMedia {
+  projectId String     @db.Uuid
+  mediaId   String     @db.Uuid
+  position  Int        @default(0)
+  altText   String?
+  caption   String?
+  project   Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  media     MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, mediaId])
+  @@index([projectId, position])
+}
+
+model InfoPage {
+  id            String        @id @default(uuid()) @db.Uuid
+  group         InfoPageGroup
+  slug          String
+  title         String
+  description   String
+  body          Json
+  coverMediaId  String?       @db.Uuid
+  status        ContentStatus @default(DRAFT)
+  sortOrder     Int           @default(0)
+  publishedAt   DateTime?
+  publishedById String?       @db.Uuid
+  createdById   String        @db.Uuid
+  updatedById   String        @db.Uuid
+  version       Int           @default(1)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+  coverMedia    MediaAsset?   @relation("PageCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  createdBy     User          @relation("PageCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy     User          @relation("PageUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+  publishedBy   User?         @relation("PagePublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+  inlineMedia   InfoPageInlineMedia[]
+
+  @@unique([group, slug])
+  @@index([group, status, sortOrder])
+}
+
+model InfoPageInlineMedia {
+  pageId   String     @db.Uuid
+  mediaId  String     @db.Uuid
+  position Int        @default(0)
+  altText  String?
+  page     InfoPage   @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  media    MediaAsset @relation(fields: [mediaId], references: [id], onDelete: Restrict)
+
+  @@id([pageId, mediaId])
+  @@index([pageId, position])
+  @@index([mediaId, pageId])
+}
+
+model HeroSlide {
+  id            String        @id @default(uuid()) @db.Uuid
+  title         String?
+  subtitle      String
+  mediaId       String        @db.Uuid
+  posterMediaId String?       @db.Uuid
+  altText       String?
+  isDecorative  Boolean       @default(false)
+  ctaLabel      String?
+  ctaUrl        String?
+  status        ContentStatus @default(DRAFT)
+  position      Int           @default(0)
+  publishedAt   DateTime?
+  publishedById String?       @db.Uuid
+  createdById   String        @db.Uuid
+  updatedById   String        @db.Uuid
+  version       Int           @default(1)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+  media         MediaAsset    @relation("HeroMedia", fields: [mediaId], references: [id], onDelete: Restrict)
+  posterMedia   MediaAsset?   @relation("HeroPoster", fields: [posterMediaId], references: [id], onDelete: SetNull)
+  createdBy     User          @relation("HeroCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  updatedBy     User          @relation("HeroUpdater", fields: [updatedById], references: [id], onDelete: Restrict)
+  publishedBy   User?         @relation("HeroPublisher", fields: [publishedById], references: [id], onDelete: SetNull)
+
+  @@index([status, position])
+}
+
+model OrganizationProfile {
+  id               String   @id @default("main")
+  displayName      String
+  shortDescription String?
+  description      Json?
+  logoPath         String?
+  updatedById      String   @db.Uuid
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  updatedBy        User     @relation(fields: [updatedById], references: [id], onDelete: Restrict)
+}
+
+model ContactEntry {
+  id          String      @id @default(uuid()) @db.Uuid
+  type        ContactType
+  label       String
+  value       String
+  href        String?
+  isPublic    Boolean     @default(false)
+  sortOrder   Int         @default(0)
+  updatedById String      @db.Uuid
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  updatedBy   User        @relation(fields: [updatedById], references: [id], onDelete: Restrict)
+
+  @@index([isPublic, sortOrder])
+}
+
+model HomeBlock {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
+  enabled     Boolean  @default(true)
+  position    Int      @default(0)
+  itemLimit   Int?
+  heading     String?
+  description String?
+  config      Json?
+  updatedById String   @db.Uuid
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  updatedBy   User     @relation(fields: [updatedById], references: [id], onDelete: Restrict)
+
+  @@index([enabled, position])
+}

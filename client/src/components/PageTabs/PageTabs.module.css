@@ -1,0 +1,14 @@
+.tabs { display: flex; flex-wrap: wrap; gap: 12px; }
+.tab { background: transparent; transition: color var(--transition-default), background-color var(--transition-default), border-color var(--transition-default); }
+.pill { border: 1px solid var(--color-border); border-radius: var(--radius-pill); padding: 12px 22px; }
+.pill.active { border-color: var(--color-primary); background: var(--color-primary); color: var(--color-on-primary); }
+.plain { border: 0; border-bottom: 2px solid transparent; border-radius: 0; padding: 10px 0 13px; color: var(--color-text-secondary); font-size: 30px; }
+.plain.active { border-color: var(--color-accent); color: var(--color-primary-hover); }
+.select { display: none; }
+@media (hover: hover) and (pointer: fine) { .tab:not(.active):hover { color: var(--color-primary); } .pill:not(.active):hover { border-color: var(--color-primary); } }
+@media (max-width: 767px) {
+  .tabs { gap: 8px; }
+  .tab { padding: 9px 15px; }
+  .plainTabs .plain { display: none; }
+  .plainTabs .select { display: block; width: 100%; appearance: none; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; padding: 14px 38px 14px 0; background: linear-gradient(45deg, transparent 50%, var(--color-primary) 50%) calc(100% - 9px) 50% / 9px 9px no-repeat, linear-gradient(135deg, var(--color-primary) 50%, transparent 50%) 100% 50% / 9px 9px no-repeat; color: var(--color-text-primary); font: inherit; font-size: 26px; }
+}

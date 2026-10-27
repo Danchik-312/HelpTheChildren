@@ -1,0 +1,4 @@
+.shell { min-height: 100vh; }
+.main { min-height: 100vh; margin-left: var(--sidebar-width); }
+.content { width: 100%; max-width: 1500px; margin: 0 auto; padding: 28px 30px 48px; }
+@media (max-width: 900px) { .main { margin-left: 0; } .content { padding: 22px 18px 40px; } }

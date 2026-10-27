@@ -1,0 +1,16 @@
+.page { background: var(--color-background); }
+
+.noteWrap { padding-bottom: 112px; }
+
+.note {
+  max-width: 800px;
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  color: var(--color-text-secondary);
+  font-size: 14.1px;
+  line-height: 20px;
+}
+
+@media (max-width: 767px) {
+  .noteWrap { padding-bottom: 80px; }
+}

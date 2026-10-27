@@ -1,0 +1,10 @@
+.backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(12,32,48,.55); }
+.dialog { width: min(900px,100%); max-height: 85vh; overflow: auto; padding: 22px; border-radius: var(--radius-md); background: white; box-shadow: 0 24px 70px rgba(0,0,0,.24); }
+.dialog header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
+.dialog h2, .dialog p { margin: 0; }.dialog header p { margin-top: 5px; color: var(--color-muted); }
+.dialog header button { border: 0; background: transparent; font-size: 30px; cursor: pointer; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(150px,1fr)); gap: 12px; }
+.grid button { min-width: 0; padding: 8px; border: 2px solid transparent; border-radius: 10px; background: #f2f6f8; cursor: pointer; text-align: left; }
+.grid button.selected { border-color: var(--color-primary); }.grid span { display: block; overflow: hidden; margin-top: 7px; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.preview { width: 100%; height: 105px; display: grid; place-items: center; object-fit: cover; border-radius: 7px; background: #dfe8ee; }
+.error { color: var(--color-danger); }

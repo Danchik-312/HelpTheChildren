@@ -1,0 +1,55 @@
+# Root allowlist
+/*
+!/.gitignore
+!/admin/
+!/client/
+!/server/
+
+# Documentation
+*.md
+
+# Dependencies
+**/node_modules/
+**/.pnp/
+**/.pnp.js
+
+# Build and test output
+**/build/
+**/dist/
+**/coverage/
+
+# Environment files
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE and OS files
+**/.idea/
+**/.vscode/
+.DS_Store
+Thumbs.db
+
+# Temporary review artifacts
+.docx-qa/
+.header-review/
+
+# Runtime uploads
+server/storage/private/*
+server/storage/public/*
+server/storage/upload-temp/
+!server/storage/private/.gitkeep
+!server/storage/public/.gitkeep
+
+# Temporary files
+**/.cache/
+**/tmp/
+**/temp/
+*.tmp
+*.swp

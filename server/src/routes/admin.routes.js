@@ -1,0 +1,24 @@
+import { Router } from 'express';
+import { asyncHandler } from '../lib/async-handler.js';
+import { authenticate } from '../middleware/authenticate.js';
+import { csrfProtection } from '../middleware/csrf.js';
+import { auditRouter } from '../modules/audit/audit.routes.js';
+import { contentAdminRouter } from '../modules/content/content.routes.js';
+import { categoriesAdminRouter } from '../modules/categories/categories.routes.js';
+import { dashboardRouter } from '../modules/dashboard/dashboard.routes.js';
+import { heroAdminRouter } from '../modules/hero/hero.routes.js';
+import { mediaAdminRouter } from '../modules/media/media.routes.js';
+import { siteAdminRouter } from '../modules/site/site.routes.js';
+import { usersRouter } from '../modules/users/users.routes.js';
+
+export const adminRouter = Router();
+adminRouter.use(asyncHandler(authenticate));
+adminRouter.use(csrfProtection);
+adminRouter.use('/dashboard', dashboardRouter);
+adminRouter.use('/users', usersRouter);
+adminRouter.use('/audit-log', auditRouter);
+adminRouter.use('/media', mediaAdminRouter);
+adminRouter.use('/categories', categoriesAdminRouter);
+adminRouter.use('/hero-slides', heroAdminRouter);
+adminRouter.use('/site', siteAdminRouter);
+for (const resource of ['publications', 'stories', 'children', 'projects', 'pages']) adminRouter.use(`/${resource}`, contentAdminRouter(resource));

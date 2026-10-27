@@ -1,0 +1,8 @@
+.columns { display: grid; grid-template-columns: minmax(240px, 340px) minmax(0, 1fr); align-items: start; gap: 18px; }
+.form { display: grid; gap: 16px; }
+.form h2 { margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.actions button { width: auto; }
+.search { margin-bottom: 14px; }
+.search label { min-width: 180px; }
+@media (max-width: 850px) { .columns { grid-template-columns: 1fr; } }

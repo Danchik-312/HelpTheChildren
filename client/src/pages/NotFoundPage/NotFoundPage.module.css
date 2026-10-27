@@ -1,0 +1,6 @@
+.page { min-height: 620px; padding-block: 110px 140px; }
+.code { color: var(--color-primary); font-size: 18px; }
+.page h1 { max-width: 900px; margin-top: 24px; font: 500 var(--font-title)/var(--line-title) var(--font-editorial); letter-spacing: -.04em; }
+.page > p:not(.code) { max-width: 600px; margin-top: 36px; font-size: var(--font-lead); line-height: var(--line-lead); }
+.page a { display: inline-block; margin-top: 48px; color: var(--color-primary); border-bottom: 2px solid currentColor; padding-bottom: 5px; }
+@media (max-width: 767px) { .page { min-height: 520px; padding-block: 72px 96px; } .page h1 { letter-spacing: -.02em; } }

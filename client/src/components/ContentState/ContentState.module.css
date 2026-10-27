@@ -1,0 +1,53 @@
+.state {
+  min-height: 260px;
+  padding-block: 72px 112px;
+}
+
+.message {
+  position: relative;
+  max-width: 800px;
+  border-top: 1px solid currentColor;
+  padding: 28px 0 0 84px;
+  color: var(--color-text-secondary);
+  font: 500 30px/40px var(--font-editorial);
+  letter-spacing: -.025em;
+}
+
+.message::before {
+  content: '';
+  position: absolute;
+  top: 24px;
+  left: 0;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--color-primary);
+  border-radius: 50%;
+}
+
+.message::after {
+  content: 'i';
+  position: absolute;
+  top: 30px;
+  left: 19px;
+  color: var(--color-primary);
+  font: 400 24px/36px var(--font-editorial);
+}
+
+.loading .message::before { animation: pulse 900ms ease-in-out infinite alternate; }
+.error .message { color: var(--color-text-primary); }
+
+@keyframes pulse {
+  from { transform: scale(.78); opacity: .45; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@media (max-width: 767px) {
+  .state { min-height: 200px; padding-block: 48px 80px; }
+  .message { padding: 20px 0 0 60px; font-size: 24px; line-height: 32px; }
+  .message::before { top: 18px; width: 36px; height: 36px; }
+  .message::after { top: 18px; left: 14px; font-size: 20px; line-height: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading .message::before { animation: none; }
+}

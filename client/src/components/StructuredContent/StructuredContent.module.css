@@ -1,0 +1,14 @@
+.content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.content > :first-child { margin-top: 0; }
+.content > :last-child { margin-bottom: 0; }
+.content p, .content li, .content blockquote { line-height: 1.65; }
+.content h1, .content h2, .content h3, .content h4, .content h5, .content h6 { line-height: 1.2; }
+.content a { color: var(--color-primary); text-decoration: underline; text-underline-offset: .15em; }
+.content ul, .content ol { padding-inline-start: 1.5em; }
+.content blockquote { margin-inline: 0; border-inline-start: 3px solid var(--color-border); padding-inline-start: 1.25rem; color: var(--color-text-secondary); }
+.figure { display: block; margin: 1.5rem 0; }
+.image { display: block; width: 100%; max-width: 100%; height: auto; border-radius: 8px; object-fit: contain; }
