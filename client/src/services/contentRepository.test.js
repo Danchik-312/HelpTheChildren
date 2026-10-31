@@ -43,6 +43,7 @@ describe('contentRepository public API integration', () => {
       { title: 'Новость', url: '/publications/news' },
       { title: 'Информация', url: '/information/report' },
       { title: 'Проект', url: '/projects/project-one' },
+      { title: 'Удалённый раздел', url: '/contacts' },
       { title: 'Несуществующая деталь', url: '/what-we-do/project-one' },
     ] }));
     await expect(contentRepository.search('текст')).resolves.toEqual([

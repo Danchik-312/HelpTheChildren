@@ -30,13 +30,13 @@ export default function ChildrenSection({ heading, description, itemLimit }) {
         <div className={styles.list} onPointerLeave={() => setActive(null)}>
           {children.slice(0, itemLimit || children.length).map((child, index) => <article className={styles.card} key={child.id}>
             <Link className={styles.childLink} to={`/children/${child.slug}`} onPointerEnter={event => { if (event.pointerType === 'mouse') setActive(index); }} onFocus={() => setActive(index)} onBlur={() => setActive(null)}>
-              {child.image && <RevealImage className={styles.mobilePhoto} src={child.image} alt={child.imageAlt || ''} />}
+              <RevealImage className={styles.mobilePhoto} src={child.image} alt={child.imageAlt || `Обложка: ${child.name}`} fallbackLabel={`Обложка для «${child.name}» недоступна`} />
               <div className={styles.cardContent}><h3 className={styles.name}>{child.name}</h3><span className={styles.details}><span className={styles.disease}>{child.disease}</span><PencilLink as="span" className={styles.help}>Помочь →</PencilLink></span></div>
             </Link>
           </article>)}
           <TextLink className={styles.more} to="/children">Все карточки</TextLink>
         </div>
-        {children.slice(0, itemLimit || children.length).map((child, index) => child.image && <img key={child.id} className={classNames(styles.preview, { [styles.previewVisible]: active === index })} src={child.image} alt="" aria-hidden="true" loading="lazy" />)}
+        {children.slice(0, itemLimit || children.length).map((child, index) => <RevealImage key={child.id} className={classNames(styles.preview, { [styles.previewVisible]: active === index })} src={child.image} alt="" aria-hidden="true" />)}
       </div>
     </Container></div>
   </section>;

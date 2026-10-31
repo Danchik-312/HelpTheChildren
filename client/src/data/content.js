@@ -57,10 +57,6 @@ export const organizationSections = [
   { id: 'org-reports', slug: 'reports', title: 'Отчётность', description: 'Проверенные отчёты будут опубликованы в этом разделе.', category: 'Документы', status: 'draft', isDemo: true },
 ];
 
-export const contacts = [
-  { id: 'contact-main', slug: 'contacts', title: 'Контакты', description: 'Адрес, телефон и электронная почта будут опубликованы после подтверждения организацией.', category: 'Контакты', status: 'draft', isDemo: true },
-];
-
 export const navigation = [
   { title: 'Кто мы', to: '/who-we' },
   { title: 'Что мы делаем', to: '/what-we-do' },
@@ -69,7 +65,6 @@ export const navigation = [
   { title: 'Дети', to: '/children' },
   { title: 'Публикации', to: '/publications' },
   { title: 'Истории', to: '/stories' },
-  { title: 'Контакты', to: '/contacts' },
 ];
 
-export const contentCollections = { children, publications, stories, projects, helpMethods, getHelpDirections, organizationSections, contacts, hero };
+export const contentCollections = { children, publications, stories, projects, helpMethods, getHelpDirections, organizationSections, hero };

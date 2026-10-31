@@ -13,11 +13,9 @@ export default function Header() {
   const [query, setQuery] = useState('');
   const [navigation, setNavigation] = useState([]);
   const [results, setResults] = useState([]);
-  const [scrollState, setScrollState] = useState({ fixed: false, hidden: false });
   const inputRef = useRef(null);
   const menuRef = useRef(null);
   const panelRef = useRef(null);
-  const lastScroll = useRef(0);
   useEffect(() => {
     let active = true;
     contentRepository.navigation().then(items => { if (active) { setNavigation(items); setResults(items); } }).catch(() => { if (active) { setNavigation([]); setResults([]); } });
@@ -51,32 +49,10 @@ export default function Header() {
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = previousOverflow; };
   }, [panel]);
-  useEffect(() => {
-    let frame;
-    const update = () => {
-      frame = undefined;
-      const current = Math.max(window.scrollY, 0);
-      const previous = lastScroll.current;
-      const movingUp = current < previous;
-      const pastHeader = current > window.innerHeight;
-      if (!panel) setScrollState({ fixed: pastHeader && movingUp, hidden: pastHeader && !movingUp });
-      lastScroll.current = current;
-    };
-    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => { window.removeEventListener('scroll', onScroll); if (frame) cancelAnimationFrame(frame); };
-  }, [panel]);
-  useEffect(() => {
-    if (panel !== null) return;
-    const current = Math.max(window.scrollY, 0);
-    const pastHeader = current > window.innerHeight;
-    if (pastHeader) setScrollState({ fixed: false, hidden: true });
-  }, [panel]);
-
   const panelOpen = panel !== null;
   return <header className={styles.header}>
     <a className={styles.skipLink} href="#main">Перейти к содержимому</a>
-    <div className={classNames(styles.surface, { [styles.fixed]: scrollState.fixed || panelOpen, [styles.hidden]: scrollState.hidden && !panelOpen, [styles.withBorder]: scrollState.fixed })}>
+    <div className={styles.surface}>
     <Container className={styles.container}>
       <div className={styles.brand}>
         <Link className={styles.logo} to="/" aria-label="Help The Children SKD, главная" onClick={() => setPanel(null)}>

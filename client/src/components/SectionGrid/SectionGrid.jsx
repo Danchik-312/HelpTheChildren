@@ -3,10 +3,11 @@ import Container from '../Container/Container';
 import PencilLink from '../PencilLink/PencilLink';
 import useInView from '../../hooks/useInView';
 import useReducedMotion from '../../hooks/useReducedMotion';
+import RevealImage from '../RevealImage/RevealImage';
 import { Link } from 'react-router-dom';
 import styles from './SectionGrid.module.css';
 
-export default function SectionGrid({ items, tone = 'light', columns = 2, label }) {
+export default function SectionGrid({ items, tone = 'light', columns = 2, label, showImages = false }) {
   const { ref, isInView } = useInView();
   const reducedMotion = useReducedMotion();
   const visible = isInView || reducedMotion;
@@ -15,6 +16,7 @@ export default function SectionGrid({ items, tone = 'light', columns = 2, label 
     <Container as="ul" className={classNames(styles.grid, styles[`columns${columns}`])}>
       {items.map(item => <li key={item.id || item.slug || item.title} className={classNames(styles.item, { [styles.visible]: visible })}>
         <PencilLink as={Link} to={item.to || item.href} className={styles.link}>
+          {showImages && <RevealImage className={styles.cover} src={item.image} alt={item.imageAlt || `Обложка: ${item.title}`} fallbackLabel={`Обложка для «${item.title}» недоступна`} />}
           <span className={styles.title}>{item.title}</span>
           <span className={styles.description}>{item.description}</span>
         </PencilLink>

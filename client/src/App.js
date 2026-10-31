@@ -36,8 +36,6 @@ export default function App() {
         <Route path="/who-we/:slug" element={<ContentDetailPage collection="organizationSections" backTo="/who-we" backLabel="Об организации" />} />
         <Route path="/information" element={<CollectionPage title="Информация" description="Информационные материалы организации." collection="generalPages" basePath="/information" emptyMessage="Информационные материалы пока не опубликованы." />} />
         <Route path="/information/:slug" element={<ContentDetailPage collection="generalPages" backTo="/information" backLabel="К информационным материалам" />} />
-        <Route path="/contacts" element={<CollectionPage title="Контакты" description="Способы связаться с организацией." collection="contacts" basePath="/contacts" emptyMessage="Контактные данные пока не опубликованы." />} />
-        <Route path="/contacts/:slug" element={<ContentDetailPage collection="contacts" backTo="/contacts" backLabel="К контактам" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </main>

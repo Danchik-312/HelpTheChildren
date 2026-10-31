@@ -1,24 +1,24 @@
 import '@testing-library/jest-dom';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Footer from './Footer';
-import { contentRepository } from '../../services/contentRepository';
 
 jest.mock('react-router-dom', () => ({ Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a> }));
-jest.mock('../../services/contentRepository', () => ({ contentRepository: { navigation: jest.fn() } }));
-jest.mock('../../hooks/useContent', () => ({ useSite: () => ({ data: { organization: {
-  displayName: 'Help The Children',
-  legalName: 'Скрываемое юридическое название',
-  description: 'Скрываемое описание',
-} } }) }));
+jest.mock('../../hooks/useContent', () => ({ useSite: () => ({ data: {
+  organization: { displayName: 'Help The Children' },
+  contacts: [
+    { id: 'phone', type: 'PHONE', label: 'Телефон', value: '+996 555 000 000', href: 'tel:+996555000000' },
+    { id: 'address', type: 'ADDRESS', label: 'Адрес', value: 'Бишкек, улица Примерная, 1', href: null },
+  ],
+} }) }));
 
-test('footer keeps navigation and copyright without organization/contact details', async () => {
-  contentRepository.navigation.mockResolvedValue([{ to: '/who-we', title: 'О нас' }]);
+test('footer renders CMS contacts and a lazy map without navigation', () => {
   render(<Footer />);
 
-  expect(await screen.findByRole('link', { name: 'О нас' })).toHaveAttribute('href', '/who-we');
+  expect(screen.getByRole('link', { name: '+996 555 000 000' })).toHaveAttribute('href', 'tel:+996555000000');
+  expect(screen.getByText('Бишкек, улица Примерная, 1')).toBeInTheDocument();
+  const map = screen.getByTitle('Офис Help The Children: Бишкек, улица Примерная, 1');
+  expect(map).toHaveAttribute('loading', 'lazy');
+  expect(map).toHaveAttribute('src', expect.stringContaining('output=embed'));
+  expect(screen.queryByRole('navigation', { name: 'Навигация в подвале' })).not.toBeInTheDocument();
   expect(screen.getByText(new RegExp(`© ${new Date().getFullYear()} Help The Children`))).toBeInTheDocument();
-  expect(screen.queryByText('Скрываемое юридическое название')).not.toBeInTheDocument();
-  expect(screen.queryByText('Скрываемое описание')).not.toBeInTheDocument();
-  expect(screen.queryByText('Контакты')).not.toBeInTheDocument();
-  await waitFor(() => expect(contentRepository.navigation).toHaveBeenCalledTimes(1));
 });

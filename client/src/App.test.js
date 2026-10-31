@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
-import { children, contacts, publications } from './data/content';
+import { children, publications } from './data/content';
 
 jest.mock('react-router/dom', () => {
   const { TextDecoder, TextEncoder } = require('util');
@@ -18,9 +18,9 @@ beforeEach(() => {
     const url = new URL(input);
     const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Проверенный текст' }] }] };
     let data = { items: [] };
-    if (url.pathname.endsWith('/public/children')) data = { items: children.map(item => ({ id: item.id, slug: item.slug, title: item.title, publicDisplayName: item.name, summary: item.description, supportReason: item.supportReason, approvedHealthSummary: item.disease, publicAgeLabel: item.age, storyBody: body, coverMedia: null })) };
+    if (url.pathname.endsWith('/public/children')) data = { items: children.map((item, index) => ({ id: item.id, slug: item.slug, title: item.title, publicDisplayName: item.name, summary: item.description, supportReason: item.supportReason, approvedHealthSummary: item.disease, publicAgeLabel: item.age, storyBody: body, coverMedia: index === 0 ? { kind: 'IMAGE', url: '/api/v1/public/media/11111111-1111-4111-8111-111111111111', alt: 'Обложка карточки' } : null })) };
     else if (url.pathname.endsWith('/public/publications')) data = { items: publications.map(item => ({ id: item.id, slug: item.slug, title: item.title, excerpt: item.excerpt, body, kind: item.category === 'Новости' ? 'NEWS' : 'ARTICLE', publishedAt: '2026-10-01T00:00:00.000Z', coverMedia: null })) };
-    else if (url.pathname === '/api/v1/public/site') data = { contacts: contacts.map(item => ({ id: item.slug, label: item.title, value: item.description, type: 'INFO', href: '/contacts' })) };
+    else if (url.pathname === '/api/v1/public/site') data = { contacts: [] };
     else if (url.pathname.endsWith('/publications/welcome-publication')) data = { id: publications[0].id, slug: publications[0].slug, title: publications[0].title, excerpt: publications[0].excerpt, body, kind: 'NEWS', publishedAt: '2026-10-01T00:00:00.000Z', coverMedia: null };
     else if (url.pathname.endsWith('/publications/transparent-help')) data = { id: publications[1].id, slug: publications[1].slug, title: publications[1].title, excerpt: publications[1].excerpt, body, kind: 'ARTICLE', publishedAt: '2026-10-01T00:00:00.000Z', coverMedia: null };
     else if (url.pathname.startsWith('/api/v1/public/publications/')) data = null;
@@ -42,6 +42,8 @@ describe('application routes', () => {
 
     expect(await screen.findByRole('heading', { name: 'Дети, которым нужна помощь' })).toBeInTheDocument();
     expect(await screen.findAllByText(children[0].name)).not.toHaveLength(0);
+    expect(screen.getByRole('img', { name: 'Обложка карточки' })).toHaveAttribute('src', expect.stringContaining('/api/v1/public/media/11111111-1111-4111-8111-111111111111'));
+    expect(screen.getByRole('img', { name: `Обложка для «${children[1].name}» недоступна` })).toBeInTheDocument();
   });
 
   test('renders a detail route and its local back link', async () => {
@@ -52,11 +54,7 @@ describe('application routes', () => {
     expect(screen.getByRole('link', { name: /к публикациям/i })).toHaveAttribute('href', '/publications');
   });
 
-  test('renders contact and child details without self-referencing list links', async () => {
-    renderRoute(`/contacts/${contacts[0].slug}`);
-    expect(await screen.findByRole('heading', { name: contacts[0].title })).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /к контактам/i })).toHaveAttribute('href', '/contacts');
-
+  test('renders child details without self-referencing list links', async () => {
     renderRoute(`/children/${children[0].slug}`);
     expect(await screen.findByRole('heading', { name: children[0].name })).toBeInTheDocument();
     expect(screen.getByText(children[0].disease)).toBeInTheDocument();
@@ -83,6 +81,8 @@ describe('application routes', () => {
 
   test.each([
     '/publications/not-a-real-slug',
+    '/contacts',
+    '/contacts/contact-id',
     '/not-a-real-route',
   ])('renders the 404 state for %s', async path => {
     renderRoute(path);

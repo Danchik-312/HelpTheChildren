@@ -1,8 +1,5 @@
-.header { position: relative; z-index: 10; height: 96px; }
-.surface { position: relative; z-index: 12; width: 100%; background: linear-gradient(90deg, var(--color-primary) 50%, var(--color-background) 50%); transition: transform 200ms ease; }
-.fixed { position: fixed; inset: 0 0 auto; }
-.hidden { transform: translateY(-100%); }
-.withBorder { border-bottom: 1px solid rgb(200 216 232 / 35%); }
+.header { position: sticky; top: 0; z-index: 10; height: 96px; }
+.surface { position: relative; z-index: 12; width: 100%; background: var(--color-primary); color: var(--color-on-primary); border-bottom: 1px solid rgb(200 216 232 / 35%); }
 .container { display: flex; align-items: center; height: 96px; }
 .brand { width: 50%; display: flex; justify-content: space-between; align-items: center; color: var(--color-on-primary); }
 .logo {
@@ -30,8 +27,9 @@
 .active .burger span:nth-child(2) { opacity: 0; }
 .active .burger span:last-child { top: 11px; transform: rotate(-45deg); }
 .menuLabel { position: relative; top: 1px; margin-left: 12px; }
-.helpLink { display: flex; align-items: center; gap: 12px; color: var(--color-primary); transition: color var(--transition-default), opacity var(--transition-default); }
+.helpLink { display: flex; align-items: center; gap: 12px; color: var(--color-on-primary); transition: color var(--transition-default), opacity var(--transition-default); }
 .helpLink img, .searchButton img { width: 24px; }
+.helpLink img, .searchButton img { filter: brightness(0) invert(1); }
 .panel { position: absolute; inset: 100% 0 auto; background: var(--color-surface); padding-block: 40px 48px; box-shadow: 0 12px 20px var(--color-shadow); opacity: 0; visibility: hidden; transform: translateY(-16px); transition: transform 300ms ease-in, opacity 150ms ease, visibility 0s linear 300ms; }
 .panelOpen { opacity: 1; visibility: visible; transform: translateY(0); transition-delay: 0s; }
 .backdrop { position: fixed; inset: 0; z-index: 11; display: block; border: 0; padding: 0; background: rgb(51 51 51 / 55%); opacity: 0; visibility: hidden; cursor: default; transition: opacity 150ms ease, visibility 0s linear 150ms; }
@@ -69,4 +67,4 @@
   .logo:hover, .helpLink:hover, .menuButton:hover, .searchButton:hover { opacity: .7; }
   .navigation a:hover { color: var(--color-primary-hover); }
 }
-@media (prefers-reduced-motion: reduce) { .surface, .panel, .backdrop, .navigation, .burger span { transition: none; } .panelOpen .navigation { transition-delay: 0s; } }
+@media (prefers-reduced-motion: reduce) { .panel, .backdrop, .navigation, .burger span { transition: none; } .panelOpen .navigation { transition-delay: 0s; } }

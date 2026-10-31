@@ -26,7 +26,7 @@ publicRouter.get('/navigation', (_req, res) => res.json({ data: { items: [
   { key: 'who-we', label: 'Кто мы', url: '/who-we' }, { key: 'what-we-do', label: 'Что мы делаем', url: '/what-we-do' },
   { key: 'give-help', label: 'Помочь', url: '/give-help' }, { key: 'get-help', label: 'Получить помощь', url: '/get-help' },
   { key: 'children', label: 'Дети', url: '/children' }, { key: 'publications', label: 'Публикации', url: '/publications' },
-  { key: 'stories', label: 'Истории', url: '/stories' }, { key: 'contacts', label: 'Контакты', url: '/contacts' },
+  { key: 'stories', label: 'Истории', url: '/stories' },
   { key: 'information', label: 'Информация', url: '/information' },
 ] } }));
 
