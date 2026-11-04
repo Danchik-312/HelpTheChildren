@@ -3,6 +3,7 @@
 .grid { display: grid; border-top: 1px solid var(--color-border); }
 .columns2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .columns3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.columns4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .item { min-height: 210px; padding: 31px 40px 34px 0; border-bottom: 1px solid var(--color-border); opacity: 0; transform: translateY(36px); transition: opacity 450ms ease-in-out, transform 450ms ease; }
 .item:nth-child(2) { transition-delay: 70ms; }
 .item:nth-child(3) { transition-delay: 140ms; }
@@ -15,13 +16,26 @@
 .columns3 .item { padding-inline: 28px; }
 .columns3 .item:nth-child(2n) { border-left: 0; }
 .columns3 .item:not(:nth-child(3n + 1)) { border-left: 1px solid var(--color-border); }
+.columns4 .item { padding-inline: 20px; }
+.columns4 .item:nth-child(2n) { border-left: 0; }
+.columns4 .item:not(:nth-child(4n + 1)) { border-left: 1px solid var(--color-border); }
 .visible { opacity: 1; transform: translateY(0); }
 .link { display: block; height: 100%; padding-right: 8px; }
 .cover { width: 100%; aspect-ratio: 4 / 3; margin-bottom: 24px; object-fit: cover; }
-.title { display: block; font: 500 var(--font-editorial-size)/var(--line-editorial) var(--font-editorial); letter-spacing: -.025em; transition: color var(--transition-default); }
-.description { display: block; max-width: 470px; margin-top: 18px; color: var(--color-text-secondary); transition: color var(--transition-default); }
+.title { display: block; overflow-wrap: anywhere; font: 500 var(--font-editorial-size)/var(--line-editorial) var(--font-editorial); letter-spacing: -.025em; transition: color var(--transition-default); }
+.columns4 .title { font-size: 30px; line-height: 36px; }
+.description { display: -webkit-box; max-width: 470px; margin-top: 18px; overflow: hidden; color: var(--color-text-secondary); transition: color var(--transition-default); -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4; }
 .link:focus-visible .title { color: var(--color-primary); }
 @media (hover: hover) and (pointer: fine) { .link:hover .title { color: var(--color-primary); } .link:hover .description { color: var(--color-text-primary); } }
-@media (max-width: 1023px) { .columns3 { grid-template-columns: repeat(2, minmax(0, 1fr)); } .columns3 .item, .columns3 .item:not(:nth-child(3n + 1)) { padding-inline: 0 28px; border-left: 0; } .columns3 .item:nth-child(2n) { padding-inline: 28px 0; border-left: 1px solid var(--color-border); } }
-@media (max-width: 767px) { .section { padding-bottom: 80px; } .tinted { padding-top: 40px; } .columns2, .columns3 { grid-template-columns: 1fr; } .item, .item:nth-child(2n), .columns3 .item, .columns3 .item:nth-child(2n), .columns3 .item:not(:nth-child(3n + 1)) { min-height: 0; padding: 24px 0 28px; border-left: 0; } .link { padding-right: 0; } .description { margin-top: 12px; } }
+@media (max-width: 1279px) and (min-width: 1024px) {
+  .columns4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .columns4 .item, .columns4 .item:nth-child(2n), .columns4 .item:not(:nth-child(4n + 1)) { padding-inline: 24px; border-left: 0; }
+  .columns4 .item:not(:nth-child(3n + 1)) { border-left: 1px solid var(--color-border); }
+}
+@media (max-width: 1023px) {
+  .columns3, .columns4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .columns3 .item, .columns3 .item:not(:nth-child(3n + 1)), .columns4 .item, .columns4 .item:nth-child(2n), .columns4 .item:not(:nth-child(4n + 1)) { padding-inline: 0 28px; border-left: 0; }
+  .columns3 .item:nth-child(2n), .columns4 .item:nth-child(2n) { padding-inline: 28px 0; border-left: 1px solid var(--color-border); }
+}
+@media (max-width: 767px) { .section { padding-bottom: 80px; } .tinted { padding-top: 40px; } .columns2, .columns3, .columns4 { grid-template-columns: 1fr; } .item, .item:nth-child(2n), .columns3 .item, .columns3 .item:nth-child(2n), .columns3 .item:not(:nth-child(3n + 1)), .columns4 .item, .columns4 .item:nth-child(2n), .columns4 .item:not(:nth-child(4n + 1)) { min-height: 0; padding: 24px 0 28px; border-left: 0; } .columns4 .title { font-size: var(--font-editorial-size); line-height: var(--line-editorial); } .link { padding-right: 0; } .description { margin-top: 12px; } }
 @media (prefers-reduced-motion: reduce) { .item { opacity: 1; transform: none; transition: none; } }

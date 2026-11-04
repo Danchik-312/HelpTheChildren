@@ -1,0 +1,6 @@
+.page {
+  --home-color-primary: #6495ed;
+  --home-color-surface: #dff1ff;
+
+  background: var(--home-color-surface);
+}

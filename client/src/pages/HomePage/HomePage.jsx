@@ -6,6 +6,7 @@ import NewsSection from '../../components/NewsSection/NewsSection';
 import FriendsSection from '../../components/FriendsSection/FriendsSection';
 import ContentState from '../../components/ContentState/ContentState';
 import { useHomepage } from '../../hooks/useContent';
+import styles from './HomePage.module.css';
 
 const blocks = {
   children: ChildrenSection,
@@ -26,11 +27,11 @@ const defaultBlocks = [
 export default function HomePage() {
   const { data, loading, error } = useHomepage();
   const homepageBlocks = data.length > 0 ? data : defaultBlocks;
-  return <>
+  return <div className={styles.page}>
     <Hero />
     {loading || error ? <ContentState loading={loading} error={error} /> : homepageBlocks.map(block => {
       const Component = blocks[block.key];
       return Component ? <Component key={block.key} heading={block.heading} description={block.description} itemLimit={block.itemLimit} config={block.config} /> : null;
     })}
-  </>;
+  </div>;
 }

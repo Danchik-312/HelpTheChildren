@@ -57,7 +57,11 @@ export default function Header() {
       <div className={styles.brand}>
         <Link className={styles.logo} to="/" aria-label="Help The Children SKD, главная" onClick={() => setPanel(null)}>
           <img className={styles.logoImage} src={logo} alt="" />
-          <span className={styles.organizationName}>Help The Children</span>
+          <span className={styles.organizationName}>
+            <span>Помощь детям</span>
+            <strong>Help The Children</strong>
+            <span>Балдарга жардам</span>
+          </span>
         </Link>
         <span className={styles.caption}>помощь детям<br />и семьям</span>
       </div>

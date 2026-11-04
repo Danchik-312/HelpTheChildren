@@ -11,7 +11,8 @@
   transition: opacity var(--transition-default);
 }
 .logoImage { display: block; width: 88px; height: 88px; object-fit: contain; }
-.organizationName { color: var(--color-on-primary); font-size: 18.3px; font-weight: 700; line-height: 22px; white-space: nowrap; }
+.organizationName { display: grid; gap: 1px; color: var(--color-on-primary); font-size: 12.6px; font-weight: 400; line-height: 15px; white-space: nowrap; }
+.organizationName strong { font-size: 18.3px; line-height: 22px; }
 .caption { width: 192px; font-size: 14.1px; line-height: 20px; }
 .actions { width: 50%; padding-left: 16px; display: flex; justify-content: space-between; align-items: center; }
 .primaryActions, .secondaryActions { display: flex; align-items: center; gap: 36px; }
@@ -43,8 +44,8 @@
 .panel p { max-width: 680px; margin-top: 28px; color: var(--color-text-secondary); }
 .skipLink { position: absolute; top: -100px; padding: 12px; background: var(--color-background); }
 .skipLink:focus { top: 8px; z-index: 20; }
-@media (max-width: 1279px) { .logo { gap: 14px; } .logoImage { width: 80px; height: 80px; } .organizationName { font-size: 16.2px; line-height: 20px; } .caption { width: 152px; } }
-@media (min-width: 1600px) { .logoImage { width: 96px; height: 96px; } .organizationName { font-size: 21.2px; line-height: 26px; } .caption { width: 224px; font-size: 18.3px; line-height: 24px; } }
+@media (max-width: 1279px) { .logo { gap: 14px; } .logoImage { width: 80px; height: 80px; } .organizationName { font-size: 11.5px; line-height: 14px; } .organizationName strong { font-size: 16.2px; line-height: 19px; } .caption { width: 152px; } }
+@media (min-width: 1600px) { .logoImage { width: 96px; height: 96px; } .organizationName { font-size: 14.1px; line-height: 17px; } .organizationName strong { font-size: 21.2px; line-height: 26px; } .caption { width: 224px; font-size: 18.3px; line-height: 24px; } }
 @media (min-width: 1920px) { .header, .container { height: 120px; } .logoImage { width: 108px; height: 108px; } }
 @media (max-width: 1023px) {
   .header { height: 64px; color: var(--color-on-primary); }
@@ -53,7 +54,8 @@
   .brand { width: 58%; }
   .logo { gap: 10px; }
   .logoImage { width: 58px; height: 58px; }
-  .organizationName { font-size: 14px; line-height: 18px; }
+  .organizationName { gap: 0; font-size: 9.5px; line-height: 11px; }
+  .organizationName strong { font-size: 13px; line-height: 16px; }
   .caption, .secondaryActions, .menuLabel { display: none; }
   .actions { width: 42%; justify-content: flex-end; }
   .primaryActions { gap: 18px; flex-direction: row-reverse; }
@@ -62,7 +64,7 @@
   .panel { max-height: calc(100dvh - 64px); overflow-y: auto; overscroll-behavior: contain; color: var(--color-text-primary); }
   .navigation { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 767px) { .brand { width: 60%; } .actions { width: 40%; } .logo { gap: 8px; } .logoImage { width: 54px; height: 54px; } .organizationName { max-width: 92px; font-size: 12.6px; line-height: 15px; white-space: normal; } .navigation { grid-template-columns: 1fr; gap: 20px; font-size: 24px; } .panel { padding-block: 28px; } .searchInput { margin-bottom: 28px; font-size: 24px; line-height: 32px; } }
+@media (max-width: 767px) { .brand { width: 60%; } .actions { width: 40%; } .logo { gap: 8px; } .logoImage { width: 54px; height: 54px; } .organizationName { max-width: 104px; font-size: 8.5px; line-height: 10px; } .organizationName strong { font-size: 11.5px; line-height: 14px; } .navigation { grid-template-columns: 1fr; gap: 20px; font-size: 24px; } .panel { padding-block: 28px; } .searchInput { margin-bottom: 28px; font-size: 24px; line-height: 32px; } }
 @media (hover: hover) and (pointer: fine) {
   .logo:hover, .helpLink:hover, .menuButton:hover, .searchButton:hover { opacity: .7; }
   .navigation a:hover { color: var(--color-primary-hover); }

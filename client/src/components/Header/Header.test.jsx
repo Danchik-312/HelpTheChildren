@@ -17,7 +17,10 @@ beforeEach(() => {
 test('shows the organization name beside the logo and keeps header controls accessible', async () => {
   render(<Header />);
 
-  expect(screen.getByRole('link', { name: 'Help The Children SKD, главная' })).toHaveTextContent('Help The Children');
+  const brand = screen.getByRole('link', { name: 'Help The Children SKD, главная' });
+  expect(brand).toHaveTextContent('Помощь детям');
+  expect(brand).toHaveTextContent('Help The Children');
+  expect(brand).toHaveTextContent('Балдарга жардам');
   expect(screen.getByRole('button', { name: 'Открыть меню' })).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Поиск по разделам' })).toBeInTheDocument();
   expect(screen.getByRole('link', { name: 'Помочь' })).toHaveAttribute('href', '/give-help');

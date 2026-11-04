@@ -22,7 +22,7 @@ export default function ContentDetailPage({ collection, backTo, backLabel }) {
   const textDetails = [...new Set([entry.summary, entry.supportReason].filter(value => typeof value === 'string' && value.trim()))];
   const structuredBody = entry.body || entry.instructions;
   return <>
-    <PageIntro title={title} image={entry.image} imageAlt={entry.imageAlt || ''}>
+    <PageIntro title={title} image={entry.image} imageAlt={entry.imageAlt || ''} preserveImageRatio={collection === 'publications'}>
       {entry.description}
     </PageIntro>
     <Container as="article" className={styles.article}>

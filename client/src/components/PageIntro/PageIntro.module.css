@@ -6,6 +6,7 @@
 .compact .description { max-width: 650px; }
 .action { grid-column: 2 / -1; margin-top: 32px; }
 .image { grid-column: 2 / -1; grid-row: 1; align-self: start; width: calc(100% + 50vw - 608px); max-width: none; height: 456px; margin-top: -112px; object-fit: cover; }
+.image.naturalImage { height: auto; object-fit: contain; }
 .withImage { padding: 112px 0 64px; }
 .withImage .title { grid-column: 1 / 3; grid-row: 1; align-self: end; position: relative; z-index: 1; padding-bottom: 31px; }
 .withImage .description { margin-top: 30px; }
@@ -20,6 +21,7 @@
   .withImage { padding: 40px 0 56px; }
   .withImage .title { padding-bottom: 17px; }
   .image { width: calc(100% + 40px); height: 220px; margin: 0 0 0 -20px; object-fit: cover; }
+  .image.naturalImage { height: auto; object-fit: contain; }
   .description { margin-top: 27px; }
   .action { margin-top: 28px; }
 }
