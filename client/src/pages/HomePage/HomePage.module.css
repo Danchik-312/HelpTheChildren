@@ -1,16 +1,30 @@
 .page {
-  --home-color-primary: #6495ed;
+  --home-color-blue: #6495ed;
+  --home-color-primary: var(--home-color-blue);
   --home-color-surface: var(--color-surface);
 
   background: var(--home-color-surface);
 }
 
-.surfaceBlock, .whiteBlock {
+.page > section {
+  --color-on-primary: #152a46;
+  --color-border-light: rgb(21 42 70 / 35%);
+}
+
+.surfaceBlock, .blueBlock {
   --home-section-text: var(--color-text-primary);
   --home-section-border: var(--color-border);
   --home-color-primary: var(--home-color-surface);
   background: var(--home-color-surface);
+  color: var(--color-text-primary);
 }
 
 .surfaceBlock { --home-color-surface: var(--color-surface); }
-.whiteBlock { --home-color-surface: var(--color-background); }
+.blueBlock {
+  --home-color-surface: var(--home-color-blue);
+  --color-text-primary: #152a46;
+  --color-text-secondary: #152a46;
+  --color-primary: #152a46;
+  --color-primary-hover: #0b1e35;
+  --color-border: rgb(21 42 70 / 35%);
+}

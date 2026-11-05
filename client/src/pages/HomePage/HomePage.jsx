@@ -31,7 +31,7 @@ export default function HomePage() {
     <Hero />
     {loading || error ? <ContentState loading={loading} error={error} /> : homepageBlocks.map((block, index) => {
       const Component = blocks[block.key];
-      return <div key={block.key} className={index % 2 === 0 ? styles.surfaceBlock : styles.whiteBlock}>
+      return <div key={block.key} className={index % 2 === 0 ? styles.surfaceBlock : styles.blueBlock}>
         <Component heading={block.heading} description={block.description} itemLimit={block.itemLimit} config={block.config} />
       </div>;
     })}

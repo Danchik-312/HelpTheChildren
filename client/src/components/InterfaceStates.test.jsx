@@ -33,7 +33,7 @@ describe('Header navigation and search', () => {
 
   test('searches public API content and reports an empty result', async () => {
     render(<MemoryRouter><Header /></MemoryRouter>);
-    fireEvent.click(screen.getByRole('button', { name: 'Поиск по разделам' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Открыть меню' }));
     const input = screen.getByRole('searchbox', { name: 'Найти раздел или материал' });
 
     fireEvent.change(input, { target: { value: 'прозрачной' } });

@@ -15,9 +15,8 @@
 .organizationName strong { font-size: 18.3px; line-height: 22px; }
 .caption { max-width: 192px; padding-left: 24px; border-left: 1px solid var(--color-border-light); font-size: 14.1px; line-height: 20px; }
 .actions { flex: 0 0 auto; display: flex; align-items: center; gap: 32px; }
-.primaryActions, .secondaryActions { display: flex; align-items: center; gap: 28px; }
-.secondaryActions { gap: 24px; }
-.menuButton, .searchButton { display: flex; align-items: center; justify-content: center; min-width: 32px; min-height: 40px; padding: 0; border: 0; background: transparent; }
+.primaryActions { display: flex; align-items: center; gap: 28px; }
+.menuButton { display: flex; align-items: center; justify-content: center; min-width: 32px; min-height: 40px; padding: 0; border: 0; background: transparent; }
 .menuButton { transition: opacity 150ms ease; }
 .burger { position: relative; display: block; flex: 0 0 24px; width: 24px; height: 24px; }
 .burger span { position: absolute; left: 1px; display: block; width: 22px; height: 2px; background: currentColor; transition: top 150ms ease, transform 150ms ease; }
@@ -29,8 +28,8 @@
 .active .burger span:last-child { top: 11px; transform: rotate(-45deg); }
 .menuLabel { position: relative; top: 1px; margin-left: 12px; }
 .helpLink { display: flex; align-items: center; gap: 12px; color: var(--color-on-primary); transition: color var(--transition-default), opacity var(--transition-default); }
-.helpLink img, .searchButton img { width: 24px; }
-.helpLink img, .searchButton img { filter: brightness(0) invert(1); }
+.helpLink img { width: 24px; }
+.helpLink img { filter: brightness(0) invert(1); }
 .panel { position: absolute; inset: 100% 0 auto; background: var(--color-surface); color: var(--color-text-primary); max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain; padding-block: 40px 48px; box-shadow: 0 12px 20px var(--color-shadow); opacity: 0; visibility: hidden; transform: translateY(-16px); transition: transform 300ms ease-in, opacity 150ms ease, visibility 0s linear 300ms; }
 .panelOpen { opacity: 1; visibility: visible; transform: translateY(0); transition-delay: 0s; }
 .backdrop { position: fixed; inset: 0; z-index: 11; display: block; border: 0; padding: 0; background: rgb(51 51 51 / 55%); opacity: 0; visibility: hidden; cursor: default; transition: opacity 150ms ease, visibility 0s linear 150ms; }
@@ -66,7 +65,7 @@
 }
 @media (max-width: 767px) { .container { gap: 8px; } .actions, .primaryActions { gap: 8px; } .logo { gap: 8px; } .logoImage { width: 54px; height: 54px; } .organizationName { max-width: 104px; font-size: 8.5px; line-height: 10px; } .organizationName strong { font-size: 11.5px; line-height: 14px; } .navigation { grid-template-columns: 1fr; gap: 20px; font-size: 24px; } .panel { padding-block: 28px; } .searchInput { margin-bottom: 28px; font-size: 24px; line-height: 32px; } }
 @media (hover: hover) and (pointer: fine) {
-  .logo:hover, .helpLink:hover, .menuButton:hover, .searchButton:hover { opacity: .7; }
+  .logo:hover, .helpLink:hover, .menuButton:hover { opacity: .7; }
   .navigation a:hover { color: var(--color-primary-hover); }
 }
 @media (prefers-reduced-motion: reduce) { .panel, .backdrop, .navigation, .burger span { transition: none; } .panelOpen .navigation { transition-delay: 0s; } }
