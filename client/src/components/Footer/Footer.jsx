@@ -27,7 +27,7 @@ export default function Footer() {
       {mapUrl
         ? <div className={styles.map}><iframe src={mapUrl} title={`Офис ${displayName}: ${officeAddress}`} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen /></div>
         : <div className={styles.mapFallback}>Адрес офиса пока не опубликован.</div>}
-      <p className={styles.copyright}>© {new Date().getFullYear()} {displayName}.</p>
     </div>
+    <p className={styles.copyright}>© {new Date().getFullYear()} {displayName}.</p>
   </Container></footer>;
 }

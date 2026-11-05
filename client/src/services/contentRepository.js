@@ -1,4 +1,4 @@
-const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
 const API_ORIGIN = new URL(API_BASE_URL, window.location.origin).origin;
 const pageGroups = { organizationSections: 'ABOUT', helpMethods: 'GIVE_HELP', getHelpDirections: 'GET_HELP', generalPages: 'GENERAL' };
 const endpointFor = {
@@ -13,8 +13,8 @@ const rootAppRoute = /^\/(?:who-we|what-we-do|give-help|get-help|children|public
 const detailAppRoute = /^\/(?:who-we|give-help|get-help|children|publications|stories|projects|information)\/[a-z0-9][a-z0-9-]*\/?$/i;
 const isSafeAppRoute = value => typeof value === 'string' && (rootAppRoute.test(value) || detailAppRoute.test(value));
 const UUID_PATH = /\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const mediaBaseUrl = new URL((process.env.REACT_APP_MEDIA_BASE_URL || `${API_BASE_URL}/public/media`).replace(/\/$/, ''), API_ORIGIN);
-const allowedVideoHosts = new Set((process.env.REACT_APP_ALLOWED_VIDEO_HOSTS || 'youtube.com,www.youtube.com,youtu.be,vimeo.com,player.vimeo.com').split(',').map(value => value.trim().toLowerCase()).filter(Boolean));
+const mediaBaseUrl = new URL((import.meta.env.VITE_MEDIA_BASE_URL || `${API_BASE_URL}/public/media`).replace(/\/$/, ''), API_ORIGIN);
+const allowedVideoHosts = new Set((import.meta.env.VITE_ALLOWED_VIDEO_HOSTS || 'youtube.com,www.youtube.com,youtu.be,vimeo.com,player.vimeo.com').split(',').map(value => value.trim().toLowerCase()).filter(Boolean));
 
 function buildPath(path, params = {}) {
   const [pathname, existingQuery = ''] = path.split('?');

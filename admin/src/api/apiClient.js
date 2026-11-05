@@ -1,4 +1,4 @@
-const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
 
 let csrfToken = null;
 const unauthorizedListeners = new Set();

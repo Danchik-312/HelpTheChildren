@@ -1,18 +1,12 @@
-import '@testing-library/jest-dom';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Header from './Header/Header';
 import ContentState from './ContentState/ContentState';
 
-jest.mock('react-router/dom', () => {
-  const { TextDecoder, TextEncoder } = require('util');
-  global.TextDecoder = TextDecoder;
-  global.TextEncoder = TextEncoder;
-  return require('react-router/dist/development/dom-export.js');
-}, { virtual: true });
 
 beforeEach(() => {
-  global.fetch = jest.fn(async input => {
+  global.fetch = vi.fn(async input => {
     const url = new URL(input);
     const q = url.searchParams.get('q');
     const items = q === 'прозрачной' ? [{ title: 'Принципы прозрачной помощи', description: 'Опубликованная статья', url: '/publications/transparent-help' }] : [];
@@ -21,8 +15,8 @@ beforeEach(() => {
 });
 
 describe('Header navigation and search', () => {
-  test('opens and closes the main menu without leaving the page locked', () => {
-    render(<MemoryRouter><Header /></MemoryRouter>);
+  test('opens and closes the main menu without leaving the page locked', async () => {
+    await act(async () => { render(<MemoryRouter><Header /></MemoryRouter>); });
     const menuButton = screen.getByRole('button', { name: 'Открыть меню' });
 
     fireEvent.click(menuButton);

@@ -8,16 +8,16 @@
 .controls svg { width: 28px; height: 28px; }
 .controls path { stroke: currentColor; }
 .previous svg { transform: rotate(180deg); }
-.viewport { margin-top: 48px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.viewport { margin: 40px -8px 0; padding: 8px 8px 16px; scroll-padding-inline: 8px; overflow-x: auto; overscroll-behavior-inline: contain; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: none; }
 .viewport::-webkit-scrollbar { display: none; }
-.track { display: flex; gap: 32px; }
-.card { flex: 0 0 calc((100% - 64px) / 3); min-width: 0; scroll-snap-align: start; }
-.childLink { display: block; height: 100%; }
-.photo { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
-.cardContent { display: grid; align-content: start; min-height: 190px; border: 1px solid var(--color-border); border-top: 0; padding: 24px; }
-.name { overflow-wrap: anywhere; font: 500 30px/36px var(--font-editorial); transition: color var(--transition-default); }
-.disease { display: -webkit-box; margin-top: 14px; overflow: hidden; color: var(--color-text-secondary); -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; }
-.help { align-self: end; width: fit-content; margin-top: 24px; color: var(--color-primary); border-bottom: 1px solid currentColor; }
+.track { display: flex; align-items: stretch; gap: 24px; }
+.card { display: flex; flex: 0 0 calc((100% - 72px) / 4); min-width: 0; scroll-snap-align: start; background: var(--color-background); border: 1px solid var(--color-border); box-shadow: 0 4px 12px rgb(37 75 122 / 8%); }
+.childLink { display: flex; flex-direction: column; width: 100%; height: 100%; }
+.photo { flex: 0 0 auto; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.cardContent { display: flex; flex: 1; flex-direction: column; min-height: 238px; border-top: 1px solid var(--color-border); padding: 20px; }
+.name { display: -webkit-box; overflow: hidden; overflow-wrap: anywhere; -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; font: 500 24px/29px var(--font-editorial); transition: color var(--transition-default); }
+.disease { display: -webkit-box; margin-top: 14px; overflow: hidden; color: var(--color-text-secondary); -webkit-box-orient: vertical; -webkit-line-clamp: 3; line-clamp: 3; font-size: 16px; line-height: 22px; }
+.help { align-self: flex-start; width: fit-content; margin-top: auto; padding-top: 20px; color: var(--color-primary); border-bottom: 1px solid currentColor; }
 .childLink:focus-visible .name { color: var(--color-primary); }
 .more { margin-top: 40px; }
 @media (hover: hover) and (pointer: fine) {
@@ -33,10 +33,10 @@
   .heading { align-items: start; }
   .controls { gap: 4px; }
   .controls button { width: 40px; height: 40px; }
-  .viewport { margin-top: 36px; }
+  .viewport { margin-top: 28px; }
   .track { gap: 16px; }
   .card { flex-basis: 100%; }
-  .cardContent { min-height: 166px; padding: 20px; }
+  .cardContent { min-height: 228px; padding: 20px; }
   .name { font-size: 25px; line-height: 30px; }
   .disease { font-size: 14px; line-height: 20px; }
   .more { margin-top: 32px; }

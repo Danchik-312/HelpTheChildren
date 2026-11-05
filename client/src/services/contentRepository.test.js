@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { contentRepository, publicMediaUrl } from './contentRepository';
 
 const response = data => ({ ok: true, json: async () => ({ data }) });
 
 describe('contentRepository public API integration', () => {
-  beforeEach(() => { global.fetch = jest.fn(); });
+  beforeEach(() => { global.fetch = vi.fn(); });
 
   test('preserves published structured content for the safe public renderer', async () => {
     global.fetch.mockResolvedValue(response({ items: [{ id: 'p1', slug: 'news', title: 'Новость', kind: 'NEWS', excerpt: 'Коротко', body: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Текст статьи' }] }] }, coverMedia: { kind: 'IMAGE', url: '/api/v1/public/media/11111111-1111-4111-8111-111111111111', alt: 'Обложка' } }] }));

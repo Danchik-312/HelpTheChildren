@@ -1,10 +1,10 @@
-import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import ProjectsSection from './ProjectsSection';
 import { useCollection } from '../../hooks/useContent';
 
-jest.mock('react-router-dom', () => ({ Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a> }));
-jest.mock('../../hooks/useContent', () => ({ useCollection: jest.fn() }));
+vi.mock('react-router-dom', () => ({ Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a> }));
+vi.mock('../../hooks/useContent', () => ({ useCollection: vi.fn() }));
 
 test('limits the homepage project list to three entries', () => {
   useCollection.mockReturnValue({

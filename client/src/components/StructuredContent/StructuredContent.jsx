@@ -1,7 +1,7 @@
 import React from 'react';
 import styles from './StructuredContent.module.css';
 
-const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SAFE_LINK_SCHEMES = /^(?:https:\/\/|mailto:|\/)/i;
 const NODE_KEYS = {

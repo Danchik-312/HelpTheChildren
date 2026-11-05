@@ -1,20 +1,14 @@
-import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import { children, publications } from './data/content';
 
-jest.mock('react-router/dom', () => {
-  const { TextDecoder, TextEncoder } = require('util');
-  global.TextDecoder = TextDecoder;
-  global.TextEncoder = TextEncoder;
-  return require('react-router/dist/development/dom-export.js');
-}, { virtual: true });
-jest.mock('./hooks/useReducedMotion', () => () => true);
+vi.mock('./hooks/useReducedMotion', () => ({ default: () => true }));
 
 beforeEach(() => {
-  window.scrollTo = jest.fn();
-  global.fetch = jest.fn(async input => {
+  window.scrollTo = vi.fn();
+  global.fetch = vi.fn(async input => {
     const url = new URL(input);
     const body = { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Проверенный текст' }] }] };
     let data = { items: [] };

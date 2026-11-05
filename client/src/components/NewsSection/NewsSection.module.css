@@ -1,5 +1,5 @@
 .section { padding: 96px 0; background: var(--home-color-surface, var(--color-background)); }
-.heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 49px; padding-top: 15px; border-top: 2px solid var(--color-text-primary); gap: 16px; }
+.heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 49px; padding-top: 15px; border-top: 1px solid var(--color-border); gap: 16px; }
 .heading > a { color: var(--color-primary); }
 .grid { display: grid; grid-template-columns: 400fr 416fr 400fr; }
 @media (max-width: 1023px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 48px; } }

@@ -15,6 +15,7 @@ export default function Header() {
   const [results, setResults] = useState([]);
   const inputRef = useRef(null);
   const menuRef = useRef(null);
+  const searchRef = useRef(null);
   const panelRef = useRef(null);
   useEffect(() => {
     let active = true;
@@ -24,9 +25,9 @@ export default function Header() {
   useEffect(() => {
     if (panel === 'search') inputRef.current?.focus();
     const close = (event) => {
-      if (event.key === 'Escape') { setPanel(null); menuRef.current?.focus(); return; }
+      if (panel && event.key === 'Escape') { setPanel(null); (panel === 'search' ? searchRef : menuRef).current?.focus(); return; }
       if (!panel || event.key !== 'Tab' || !panelRef.current) return;
-      const focusable = [menuRef.current, ...panelRef.current.querySelectorAll('a, input, button')].filter(Boolean);
+      const focusable = [menuRef.current, searchRef.current, ...panelRef.current.querySelectorAll('a, input, button')].filter(Boolean);
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
@@ -73,7 +74,7 @@ export default function Header() {
           <Link className={styles.helpLink} to="/give-help" onClick={() => setPanel(null)}><img src={heart} alt="" />Помочь</Link>
         </div>
         <div className={styles.secondaryActions}>
-          <button className={styles.searchButton} aria-label="Поиск по разделам" aria-expanded={panel === 'search'} aria-controls="header-panel" onClick={() => setPanel(panel === 'search' ? null : 'search')}><img src={search} alt="" /></button>
+          <button ref={searchRef} className={styles.searchButton} aria-label="Поиск по разделам" aria-expanded={panel === 'search'} aria-controls="header-panel" onClick={() => setPanel(panel === 'search' ? null : 'search')}><img src={search} alt="" /></button>
         </div>
       </div>
     </Container>

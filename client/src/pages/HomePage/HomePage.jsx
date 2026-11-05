@@ -26,12 +26,14 @@ const defaultBlocks = [
 
 export default function HomePage() {
   const { data, loading, error } = useHomepage();
-  const homepageBlocks = data.length > 0 ? data : defaultBlocks;
+  const homepageBlocks = (data.length > 0 ? data : defaultBlocks).filter(block => blocks[block.key]);
   return <div className={styles.page}>
     <Hero />
-    {loading || error ? <ContentState loading={loading} error={error} /> : homepageBlocks.map(block => {
+    {loading || error ? <ContentState loading={loading} error={error} /> : homepageBlocks.map((block, index) => {
       const Component = blocks[block.key];
-      return Component ? <Component key={block.key} heading={block.heading} description={block.description} itemLimit={block.itemLimit} config={block.config} /> : null;
+      return <div key={block.key} className={index % 2 === 0 ? styles.surfaceBlock : styles.whiteBlock}>
+        <Component heading={block.heading} description={block.description} itemLimit={block.itemLimit} config={block.config} />
+      </div>;
     })}
   </div>;
 }

@@ -1,6 +1,16 @@
 .page {
   --home-color-primary: #6495ed;
-  --home-color-surface: #dff1ff;
+  --home-color-surface: var(--color-surface);
 
   background: var(--home-color-surface);
 }
+
+.surfaceBlock, .whiteBlock {
+  --home-section-text: var(--color-text-primary);
+  --home-section-border: var(--color-border);
+  --home-color-primary: var(--home-color-surface);
+  background: var(--home-color-surface);
+}
+
+.surfaceBlock { --home-color-surface: var(--color-surface); }
+.whiteBlock { --home-color-surface: var(--color-background); }

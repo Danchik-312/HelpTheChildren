@@ -1,15 +1,16 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { heroApi } from '../api/contentApi';
 import HeroPage from './HeroPage';
 
-jest.mock('../api/contentApi', () => ({ heroApi: { list: jest.fn(), create: jest.fn(), update: jest.fn(), publish: jest.fn(), unpublish: jest.fn(), reorder: jest.fn(), archive: jest.fn() } }));
-jest.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => true }) }));
-jest.mock('../components/PrivateMediaPreview', () => ({ media, alt }) => <span data-testid="media-preview">{media?.originalName}:{alt}</span>);
-jest.mock('../components/MediaPicker', () => () => null);
+vi.mock('../api/contentApi', () => ({ heroApi: { list: vi.fn(), create: vi.fn(), update: vi.fn(), publish: vi.fn(), unpublish: vi.fn(), reorder: vi.fn(), archive: vi.fn() } }));
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => true }) }));
+vi.mock('../components/PrivateMediaPreview', () => ({ default: ({ media, alt }) => <span data-testid="media-preview">{media?.originalName}:{alt}</span> }));
+vi.mock('../components/MediaPicker', () => ({ default: () => null }));
 
 const slide = { id: 'slide-1', title: 'Помощь детям', subtitle: 'Описание', status: 'DRAFT', position: 0, version: 2, mediaId: 'media-1', media: { id: 'media-1', kind: 'IMAGE', originalName: 'hero.jpg' }, isDecorative: false, altText: 'Дети' };
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => vi.clearAllMocks());
 
 test('показывает реальные слайды и публикует с текущей версией', async () => {
   heroApi.list.mockResolvedValue({ items: [slide] });

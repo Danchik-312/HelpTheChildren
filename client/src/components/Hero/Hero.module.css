@@ -12,7 +12,8 @@
 .controlsContainer { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); }
 .controls { position: absolute; display: flex; left: 0; bottom: 24px; animation: controlsIn 600ms ease 700ms both; }
 .controls button { width: 48px; height: 48px; border: none; padding: 0; background: transparent; transition: opacity 250ms ease; }
-@media (hover: hover) and (pointer: fine) { .controls button:hover { opacity: .5; } }
+@media (hover: hover) and (pointer: fine) { .controls button:not(:disabled):hover { opacity: .5; } }
+.controls button:disabled { opacity: .3; cursor: default; }
 .controls svg { width: 32px; height: 32px; }
 .controls path { stroke: var(--color-on-primary); }
 .previous svg { transform: rotate(180deg); }

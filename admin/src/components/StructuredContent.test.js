@@ -1,7 +1,8 @@
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import StructuredContent from './StructuredContent';
 
-jest.mock('./PrivateMediaPreview', () => ({ media, alt }) => <img data-testid="safe-media" data-media-id={media.id} alt={alt} />);
+vi.mock('./PrivateMediaPreview', () => ({ default: ({ media, alt }) => <img data-testid="safe-media" data-media-id={media.id} alt={alt} /> }));
 
 test('выводит форматированный текст без интерпретации HTML', () => {
   render(<StructuredContent value={{ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: '<img src=x onerror=alert(1)>', marks: [{ type: 'bold' }] }] }] }} />);
@@ -24,8 +25,18 @@ test('рендерит разрешённые ссылки и изображен
   const id = '123e4567-e89b-42d3-a456-426614174000';
   render(<StructuredContent value={{ type: 'doc', content: [
     { type: 'paragraph', content: [{ type: 'text', text: 'Подробнее', marks: [{ type: 'link', attrs: { href: '/help' } }] }] },
-    { type: 'image', attrs: { mediaId: id, src: `/api/v1/media/${id}`, alt: 'Описание' } },
+    { type: 'image', attrs: { mediaId: id, alt: 'Описание' } },
   ] }} />);
   expect(screen.getByRole('link', { name: 'Подробнее' })).toHaveAttribute('href', '/help');
   expect(screen.getByTestId('safe-media')).toHaveAttribute('data-media-id', id);
+});
+
+
+test('rejects a media image with an arbitrary src even when mediaId is valid', () => {
+  const id = '123e4567-e89b-42d3-a456-426614174000';
+  render(<StructuredContent value={{ type: 'doc', content: [
+    { type: 'image', attrs: { mediaId: id, src: 'https://attacker.example/image.png', alt: 'Unsafe image' } },
+  ] }} />);
+  expect(screen.queryByTestId('safe-media')).not.toBeInTheDocument();
+  expect(document.querySelector('img')).not.toBeInTheDocument();
 });

@@ -1,7 +1,7 @@
 .header { position: sticky; top: 0; z-index: 10; height: 96px; }
 .surface { position: relative; z-index: 12; width: 100%; background: var(--color-primary); color: var(--color-on-primary); border-bottom: 1px solid rgb(200 216 232 / 35%); }
-.container { display: flex; align-items: center; height: 96px; }
-.brand { width: 50%; display: flex; justify-content: space-between; align-items: center; color: var(--color-on-primary); }
+.container { display: flex; align-items: center; justify-content: space-between; gap: 40px; height: 96px; }
+.brand { min-width: 0; display: flex; align-items: center; gap: 40px; color: var(--color-on-primary); }
 .logo {
   display: flex;
   align-items: center;
@@ -13,11 +13,11 @@
 .logoImage { display: block; width: 88px; height: 88px; object-fit: contain; }
 .organizationName { display: grid; gap: 1px; color: var(--color-on-primary); font-size: 12.6px; font-weight: 400; line-height: 15px; white-space: nowrap; }
 .organizationName strong { font-size: 18.3px; line-height: 22px; }
-.caption { width: 192px; font-size: 14.1px; line-height: 20px; }
-.actions { width: 50%; padding-left: 16px; display: flex; justify-content: space-between; align-items: center; }
-.primaryActions, .secondaryActions { display: flex; align-items: center; gap: 36px; }
+.caption { max-width: 192px; padding-left: 24px; border-left: 1px solid var(--color-border-light); font-size: 14.1px; line-height: 20px; }
+.actions { flex: 0 0 auto; display: flex; align-items: center; gap: 32px; }
+.primaryActions, .secondaryActions { display: flex; align-items: center; gap: 28px; }
 .secondaryActions { gap: 24px; }
-.menuButton, .searchButton { display: flex; align-items: center; padding: 0; border: 0; background: transparent; }
+.menuButton, .searchButton { display: flex; align-items: center; justify-content: center; min-width: 32px; min-height: 40px; padding: 0; border: 0; background: transparent; }
 .menuButton { transition: opacity 150ms ease; }
 .burger { position: relative; display: block; flex: 0 0 24px; width: 24px; height: 24px; }
 .burger span { position: absolute; left: 1px; display: block; width: 22px; height: 2px; background: currentColor; transition: top 150ms ease, transform 150ms ease; }
@@ -31,42 +31,44 @@
 .helpLink { display: flex; align-items: center; gap: 12px; color: var(--color-on-primary); transition: color var(--transition-default), opacity var(--transition-default); }
 .helpLink img, .searchButton img { width: 24px; }
 .helpLink img, .searchButton img { filter: brightness(0) invert(1); }
-.panel { position: absolute; inset: 100% 0 auto; background: var(--color-surface); padding-block: 40px 48px; box-shadow: 0 12px 20px var(--color-shadow); opacity: 0; visibility: hidden; transform: translateY(-16px); transition: transform 300ms ease-in, opacity 150ms ease, visibility 0s linear 300ms; }
+.panel { position: absolute; inset: 100% 0 auto; background: var(--color-surface); color: var(--color-text-primary); max-height: calc(100dvh - 96px); overflow-y: auto; overscroll-behavior: contain; padding-block: 40px 48px; box-shadow: 0 12px 20px var(--color-shadow); opacity: 0; visibility: hidden; transform: translateY(-16px); transition: transform 300ms ease-in, opacity 150ms ease, visibility 0s linear 300ms; }
 .panelOpen { opacity: 1; visibility: visible; transform: translateY(0); transition-delay: 0s; }
 .backdrop { position: fixed; inset: 0; z-index: 11; display: block; border: 0; padding: 0; background: rgb(51 51 51 / 55%); opacity: 0; visibility: hidden; cursor: default; transition: opacity 150ms ease, visibility 0s linear 150ms; }
 .backdropVisible { opacity: 1; visibility: visible; transition-delay: 0s; }
 .navigation { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; font-size: 26px; line-height: 1.3; opacity: 0; transform: translateY(12px); transition: opacity 150ms ease, transform 180ms ease; }
 .panelOpen .navigation { opacity: 1; transform: translateY(0); transition-delay: 200ms; }
 .navigation a { width: fit-content; transition: color var(--transition-default); }
-.navigation a:focus-visible { color: var(--color-primary-hover); }
+.navigation a:focus-visible, .navigation a:active { color: var(--color-primary-hover); }
 .searchInput { width: 100%; border: 0; border-bottom: 1px solid var(--color-border); border-radius: 0; background: transparent; padding: 12px 0 16px; margin-bottom: 32px; font: 500 30px/40px var(--font-editorial); appearance: none; }
 .searchInput::placeholder { color: var(--color-text-secondary); opacity: 1; }
 .panel p { max-width: 680px; margin-top: 28px; color: var(--color-text-secondary); }
-.skipLink { position: absolute; top: -100px; padding: 12px; background: var(--color-background); }
+.skipLink { position: absolute; top: -100px; padding: 12px; background: var(--color-background); color: var(--color-text-primary); }
 .skipLink:focus { top: 8px; z-index: 20; }
-@media (max-width: 1279px) { .logo { gap: 14px; } .logoImage { width: 80px; height: 80px; } .organizationName { font-size: 11.5px; line-height: 14px; } .organizationName strong { font-size: 16.2px; line-height: 19px; } .caption { width: 152px; } }
-@media (min-width: 1600px) { .logoImage { width: 96px; height: 96px; } .organizationName { font-size: 14.1px; line-height: 17px; } .organizationName strong { font-size: 21.2px; line-height: 26px; } .caption { width: 224px; font-size: 18.3px; line-height: 24px; } }
-@media (min-width: 1920px) { .header, .container { height: 120px; } .logoImage { width: 108px; height: 108px; } }
+@media (max-width: 1279px) { .logo { gap: 14px; } .logoImage { width: 80px; height: 80px; } .organizationName { font-size: 11.5px; line-height: 14px; } .organizationName strong { font-size: 16.2px; line-height: 19px; } .caption { max-width: 152px; padding-left: 20px; } .brand { gap: 24px; } .container { gap: 24px; } }
+@media (min-width: 1600px) { .logoImage { width: 96px; height: 96px; } .organizationName { font-size: 14.1px; line-height: 17px; } .organizationName strong { font-size: 21.2px; line-height: 26px; } .caption { max-width: 224px; font-size: 18.3px; line-height: 24px; } }
+@media (min-width: 1920px) { .header, .container { height: 120px; } .panel { max-height: calc(100dvh - 120px); } .logoImage { width: 108px; height: 108px; } }
 @media (max-width: 1023px) {
   .header { height: 64px; color: var(--color-on-primary); }
   .surface { background: var(--color-primary); }
-  .container { height: 64px; }
-  .brand { width: 58%; }
+  .container { height: 64px; gap: 16px; }
+  .brand { flex: 1 1 auto; }
   .logo { gap: 10px; }
   .logoImage { width: 58px; height: 58px; }
   .organizationName { gap: 0; font-size: 9.5px; line-height: 11px; }
   .organizationName strong { font-size: 13px; line-height: 16px; }
-  .caption, .secondaryActions, .menuLabel { display: none; }
-  .actions { width: 42%; justify-content: flex-end; }
-  .primaryActions { gap: 18px; flex-direction: row-reverse; }
-  .helpLink { color: var(--color-on-primary); border: 1px solid currentColor; font-size: 14px; line-height: 20px; padding: 3px 12px; }
+  .caption, .menuLabel { display: none; }
+  .actions { gap: 12px; justify-content: flex-end; }
+  .primaryActions { gap: 12px; flex-direction: row-reverse; }
+  .helpLink { color: var(--color-on-primary); border: 1px solid currentColor; border-radius: var(--radius-pill); font-size: 14px; line-height: 20px; padding: 5px 10px; }
   .helpLink img { display: none; }
   .panel { max-height: calc(100dvh - 64px); overflow-y: auto; overscroll-behavior: contain; color: var(--color-text-primary); }
   .navigation { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 767px) { .brand { width: 60%; } .actions { width: 40%; } .logo { gap: 8px; } .logoImage { width: 54px; height: 54px; } .organizationName { max-width: 104px; font-size: 8.5px; line-height: 10px; } .organizationName strong { font-size: 11.5px; line-height: 14px; } .navigation { grid-template-columns: 1fr; gap: 20px; font-size: 24px; } .panel { padding-block: 28px; } .searchInput { margin-bottom: 28px; font-size: 24px; line-height: 32px; } }
+@media (max-width: 767px) { .container { gap: 8px; } .actions, .primaryActions { gap: 8px; } .logo { gap: 8px; } .logoImage { width: 54px; height: 54px; } .organizationName { max-width: 104px; font-size: 8.5px; line-height: 10px; } .organizationName strong { font-size: 11.5px; line-height: 14px; } .navigation { grid-template-columns: 1fr; gap: 20px; font-size: 24px; } .panel { padding-block: 28px; } .searchInput { margin-bottom: 28px; font-size: 24px; line-height: 32px; } }
 @media (hover: hover) and (pointer: fine) {
   .logo:hover, .helpLink:hover, .menuButton:hover, .searchButton:hover { opacity: .7; }
   .navigation a:hover { color: var(--color-primary-hover); }
 }
 @media (prefers-reduced-motion: reduce) { .panel, .backdrop, .navigation, .burger span { transition: none; } .panelOpen .navigation { transition-delay: 0s; } }
+
+@media (max-width: 374px) { .logoImage { width: 40px; height: 40px; } .logo { gap: 5px; } .organizationName strong { font-size: 10px; } .actions, .primaryActions { gap: 4px; } .helpLink { padding-inline: 6px; } }

@@ -13,7 +13,7 @@ import { ReactComponent as Arrow } from '../../assets/icons/next.svg';
 import styles from './ChildrenSection.module.css';
 
 export default function ChildrenSection({ heading, description, itemLimit }) {
-  const limit = itemLimit || 6;
+  const limit = Math.max(4, Number(itemLimit) || 6);
   const { data: children, loading, error } = useCollection('children', { pageSize: limit });
   const { ref, isInView } = useInView();
   const reducedMotion = useReducedMotion();

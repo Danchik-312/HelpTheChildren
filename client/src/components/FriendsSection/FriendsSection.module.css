@@ -1,4 +1,4 @@
-.section { padding: 48px 0 32px; background: var(--home-color-primary, var(--color-primary)); }
+.section { --color-on-primary: var(--home-section-text, #fff); padding: 48px 0 32px; background: var(--home-color-primary, var(--color-primary)); }
 .container { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; align-items: end; }
 .content { display: flex; flex-direction: column; align-items: flex-start; }
 .link { display: block; width: 80px; margin-top: 16px; grid-column: 1; }

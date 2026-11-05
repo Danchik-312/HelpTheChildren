@@ -1,11 +1,12 @@
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import DashboardPage from './DashboardPage';
 import { apiRequest } from '../api/apiClient';
 import { useAuth } from '../auth/AuthContext';
 
-jest.mock('../api/apiClient', () => ({ apiRequest: jest.fn() }));
-jest.mock('../auth/AuthContext', () => ({ useAuth: jest.fn() }));
-jest.mock('react-router-dom', () => ({ Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a> }));
+vi.mock('../api/apiClient', () => ({ apiRequest: vi.fn() }));
+vi.mock('../auth/AuthContext', () => ({ useAuth: vi.fn() }));
+vi.mock('react-router-dom', () => ({ Link: ({ children, to, ...props }) => <a href={to} {...props}>{children}</a> }));
 
 test('показывает статистику, полученную от API, без подстановки значений', async () => {
   useAuth.mockReturnValue({ hasArea: () => true });

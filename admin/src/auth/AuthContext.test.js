@@ -1,11 +1,12 @@
+import { vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { AuthProvider, useAuth } from './AuthContext';
 import { apiRequest, setCsrfToken, subscribeUnauthorized } from '../api/apiClient';
 
-jest.mock('../api/apiClient', () => ({
-  apiRequest: jest.fn(),
-  setCsrfToken: jest.fn(),
-  subscribeUnauthorized: jest.fn(),
+vi.mock('../api/apiClient', () => ({
+  apiRequest: vi.fn(),
+  setCsrfToken: vi.fn(),
+  subscribeUnauthorized: vi.fn(),
 }));
 
 function AuthControls() {

@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import AreaRoute from './AreaRoute';
 import { useAuth } from './AuthContext';
 
-jest.mock('./AuthContext', () => ({ useAuth: jest.fn() }));
-jest.mock('react-router-dom', () => ({
+vi.mock('./AuthContext', () => ({ useAuth: vi.fn() }));
+vi.mock('react-router-dom', () => ({
   Navigate: ({ to }) => <p>Переход: {to}</p>,
   Outlet: () => <p>Разрешённый раздел</p>,
 }));
