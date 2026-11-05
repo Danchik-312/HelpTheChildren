@@ -1,13 +1,14 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import CategoriesPage from './CategoriesPage';
 import { categoriesApi } from '../api/contentApi';
 
-jest.mock('../api/contentApi', () => ({ categoriesApi: { list: jest.fn(), create: jest.fn(), update: jest.fn(), remove: jest.fn() } }));
+vi.mock('../api/contentApi', () => ({ categoriesApi: { list: vi.fn(), create: vi.fn(), update: vi.fn(), remove: vi.fn() } }));
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   categoriesApi.list.mockResolvedValue({ items: [{ id: 'cat-1', name: 'Новости', slug: 'news', publicationCount: 2 }] });
-  window.confirm = jest.fn(() => true);
+  window.confirm = vi.fn(() => true);
 });
 
 test('отображает реальные категории и сообщает о конфликте удаления используемой категории', async () => {

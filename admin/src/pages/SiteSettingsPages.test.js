@@ -1,12 +1,13 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { siteApi } from '../api/contentApi';
 import ContactsPage from './ContactsPage';
 import HomepageBlocksPage from './HomepageBlocksPage';
 
-jest.mock('../api/contentApi', () => ({ siteApi: { get: jest.fn(), createContact: jest.fn(), updateContact: jest.fn(), deleteContact: jest.fn(), updateBlock: jest.fn() } }));
-jest.mock('../auth/AuthContext', () => ({ useAuth: () => ({ user: { role: 'ADMIN' } }) }));
+vi.mock('../api/contentApi', () => ({ siteApi: { get: vi.fn(), createContact: vi.fn(), updateContact: vi.fn(), deleteContact: vi.fn(), updateBlock: vi.fn() } }));
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ user: { role: 'ADMIN' } }) }));
 
-beforeEach(() => jest.clearAllMocks());
+beforeEach(() => vi.clearAllMocks());
 
 test('создаёт контакт через site API', async () => {
   siteApi.get.mockResolvedValue({ contacts: [] });

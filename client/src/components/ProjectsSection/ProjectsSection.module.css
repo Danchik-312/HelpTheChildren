@@ -1,6 +1,6 @@
-.section { padding: 32px 0 96px; background: var(--color-primary); color: var(--color-on-primary); }
+.section { --color-on-primary: var(--home-section-text, #fff); padding: 32px 0 96px; background: var(--home-color-primary, var(--color-primary)); color: var(--color-on-primary); }
 .list { width: 800px; max-width: 100%; margin-top: 64px; }
-.list li { border-bottom: 1px solid var(--color-border-light); padding-block: 16px; }
+.list li { border-bottom: 1px solid var(--home-section-border, var(--color-border-light)); padding-block: 16px; }
 .list a { display: block; font: 500 var(--font-editorial-size)/var(--line-editorial) var(--font-editorial); margin: -7px 0 -9px; transition: opacity var(--transition-default); }
 .list a:focus-visible { opacity: .7; }
 @media (hover: hover) and (pointer: fine) { .list a:hover { opacity: .7; } }

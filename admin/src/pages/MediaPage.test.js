@@ -1,14 +1,15 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import MediaPage from './MediaPage';
 import { mediaApi } from '../api/contentApi';
 import MediaPicker from '../components/MediaPicker';
 
-jest.mock('../api/contentApi', () => ({ mediaApi: { list: jest.fn(), upload: jest.fn(), usages: jest.fn(), update: jest.fn(), remove: jest.fn() } }));
-jest.mock('../auth/AuthContext', () => ({ useAuth: () => ({ user: { role: 'ADMIN' } }) }));
-jest.mock('../components/PrivateMediaPreview', () => () => <span>preview</span>);
+vi.mock('../api/contentApi', () => ({ mediaApi: { list: vi.fn(), upload: vi.fn(), usages: vi.fn(), update: vi.fn(), remove: vi.fn() } }));
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ user: { role: 'ADMIN' } }) }));
+vi.mock('../components/PrivateMediaPreview', () => ({ default: () => <span>preview</span> }));
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   mediaApi.list.mockResolvedValue({ items: [], meta: {} });
 });
 
@@ -21,7 +22,8 @@ test('загружает выбранное изображение и перед
   fireEvent.change(screen.getByLabelText('Изображение или видео'), { target: { files: [file] } });
   fireEvent.change(screen.getByLabelText('Альтернативный текст'), { target: { value: 'Дети на прогулке' } });
   fireEvent.click(screen.getByLabelText('Подтверждаю право на использование файла'));
-  fireEvent.click(screen.getByRole('button', { name: 'Загрузить' }));
+  // jsdom's required-file validation does not observe fireEvent's synthetic FileList.
+  fireEvent.submit(screen.getByLabelText('Изображение или видео').closest('form'));
 
   await waitFor(() => expect(mediaApi.upload).toHaveBeenCalledTimes(1));
   const formData = mediaApi.upload.mock.calls[0][0];
@@ -36,13 +38,14 @@ test('показывает ошибку API загрузки, не имитир�
   render(<MediaPage />);
   await screen.findByText('Файлов пока нет');
   fireEvent.change(screen.getByLabelText('Изображение или видео'), { target: { files: [new File(['x'], 'x.png', { type: 'image/png' })] } });
-  fireEvent.click(screen.getByRole('button', { name: 'Загрузить' }));
+  // jsdom's required-file validation does not observe fireEvent's synthetic FileList.
+  fireEvent.submit(screen.getByLabelText('Изображение или видео').closest('form'));
   expect(await screen.findByRole('alert')).toHaveTextContent('Нет прав на загрузку');
 });
 
 test('выбор изображения в медиатеке возвращает запись API и закрывает окно', async () => {
-  const onChange = jest.fn();
-  const onClose = jest.fn();
+  const onChange = vi.fn();
+  const onClose = vi.fn();
   const image = { id: 'media-2', kind: 'IMAGE', originalName: 'cover.png' };
   mediaApi.list.mockResolvedValue({ items: [image, { id: 'video-1', kind: 'VIDEO', originalName: 'clip.mp4' }] });
   render(<MediaPicker value={null} onChange={onChange} onClose={onClose} />);
@@ -50,4 +53,13 @@ test('выбор изображения в медиатеке возвращае
   expect(onChange).toHaveBeenCalledWith(image);
   expect(onClose).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole('button', { name: /clip\.mp4/ })).not.toBeInTheDocument();
+});
+
+
+test('does not upload when the submitted form has no file', async () => {
+  render(<MediaPage />);
+  await screen.findByText('Файлов пока нет');
+  fireEvent.submit(screen.getByLabelText('Изображение или видео').closest('form'));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Выберите файл.');
+  expect(mediaApi.upload).not.toHaveBeenCalled();
 });

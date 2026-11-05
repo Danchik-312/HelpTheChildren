@@ -1,0 +1,22 @@
+CRA → Vite: публичный сайт
+
+Среда миграции: Node 20.16.0, npm 10.8.1. Vite 6.4.5 и Vitest 4.1.12 выбраны с поддержкой установленного Node; обновление Node не требуется для этой миграции.
+
+Команды из client/:
+  npm install          установить зависимости
+  npm start            http://localhost:3000, strictPort
+  npm test             Vitest watch
+  npm test -- --run    однократный запуск тестов
+  npm run build        production-сборка в dist/
+  npm run preview      просмотр dist на localhost:3000
+
+HTML entry — client/index.html. Статика остаётся в public/. Для production-хостинга нужен SPA fallback на index.html.
+
+Публичные env переименованы:
+  REACT_APP_API_URL -> VITE_API_URL
+  REACT_APP_MEDIA_BASE_URL -> VITE_MEDIA_BASE_URL
+  REACT_APP_ALLOWED_VIDEO_HOSTS -> VITE_ALLOWED_VIDEO_HOSTS
+
+Vite читает эти значения при старте dev-сервера или сборке. VITE_* доступны в браузере: секреты в них не помещать. Server env не меняются. Значения по умолчанию и валидация media/video URL сохранены.
+
+JSX в src/*.js поддерживается конфигурацией без переименования файлов. SVG сохраняют default URL import и named ReactComponent import; Hero не изменён.

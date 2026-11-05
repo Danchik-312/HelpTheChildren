@@ -1,4 +1,4 @@
-.section { padding: 32px 0 64px; }
+.section { padding: 32px 0 64px; background: var(--home-color-surface, var(--color-background)); }
 .content { margin-top: 56px; }
 .ways {
   display: grid;

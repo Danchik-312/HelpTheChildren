@@ -1,18 +1,19 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { childrenApi, storiesApi } from '../api/contentApi';
 import ContentFormPage from './ContentFormPage';
 
-jest.mock('../api/contentApi', () => {
-  const api = { list: jest.fn(), get: jest.fn(), preview: jest.fn(), create: jest.fn(), update: jest.fn(), publish: jest.fn(), unpublish: jest.fn(), archive: jest.fn() };
+vi.mock('../api/contentApi', () => {
+  const api = { list: vi.fn(), get: vi.fn(), preview: vi.fn(), create: vi.fn(), update: vi.fn(), publish: vi.fn(), unpublish: vi.fn(), archive: vi.fn() };
   return { storiesApi: { ...api }, projectsApi: { ...api }, pagesApi: { ...api }, childrenApi: { ...api } };
 });
-jest.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => true, user: { role: 'ADMIN' } }) }));
-jest.mock('../components/RichTextEditor', () => ({ value, onChange }) => <div><span>{value.content?.[0]?.content?.[0]?.text}</span><button type="button" onClick={() => onChange({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Новый текст' }] }] })}>Изменить текст</button></div>);
-jest.mock('../components/MediaPicker', () => () => null);
-jest.mock('../components/PrivateMediaPreview', () => () => null);
-jest.mock('react-router-dom', () => ({
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => true, user: { role: 'ADMIN' } }) }));
+vi.mock('../components/RichTextEditor', () => ({ default: ({ value, onChange }) => <div><span>{value.content?.[0]?.content?.[0]?.text}</span><button type="button" onClick={() => onChange({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Новый текст' }] }] })}>Изменить текст</button></div> }));
+vi.mock('../components/MediaPicker', () => ({ default: () => null }));
+vi.mock('../components/PrivateMediaPreview', () => ({ default: () => null }));
+vi.mock('react-router-dom', () => ({
   Link: ({ to, children, ...props }) => <a href={to} {...props}>{children}</a>,
-  useNavigate: () => jest.fn(),
+  useNavigate: () => vi.fn(),
   useParams: () => ({ id: 'story-1' }),
 }));
 

@@ -1,3 +1,4 @@
 .image { opacity: 0; transition: opacity 300ms ease-in; }
 .visible { opacity: 1; }
+.fallback { display: block; background: var(--color-surface); border: 1px solid var(--color-border); }
 @media (prefers-reduced-motion: reduce) { .image { opacity: 1; transition: none; } }

@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import Sidebar from './Sidebar';
 import { useAuth } from '../auth/AuthContext';
 
-jest.mock('../auth/AuthContext', () => ({ useAuth: jest.fn() }));
-jest.mock('react-router-dom', () => ({
+vi.mock('../auth/AuthContext', () => ({ useAuth: vi.fn() }));
+vi.mock('react-router-dom', () => ({
   NavLink: ({ children, to, className, end: _end, ...props }) => <a href={to} className={typeof className === 'function' ? className({ isActive: false }) : className} {...props}>{children}</a>,
   useLocation: () => ({ pathname: '/', search: '' }),
 }));

@@ -1,20 +1,14 @@
-import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import PublicationsPage from './PublicationsPage/PublicationsPage';
 import WhatWeDoPage from './WhatWeDoPage/WhatWeDoPage';
 import { projects, publications } from '../data/content';
 
-jest.mock('react-router/dom', () => {
-  const { TextDecoder, TextEncoder } = require('util');
-  global.TextDecoder = TextDecoder;
-  global.TextEncoder = TextEncoder;
-  return require('react-router/dist/development/dom-export.js');
-}, { virtual: true });
-jest.mock('../hooks/useReducedMotion', () => () => true);
+vi.mock('../hooks/useReducedMotion', () => ({ default: () => true }));
 
 beforeEach(() => {
-  global.fetch = jest.fn(async input => {
+  global.fetch = vi.fn(async input => {
     const url = new URL(input);
     const publicationItems = publications.map(item => ({ id: item.id, slug: item.slug, title: item.title, excerpt: item.excerpt, body: { type: 'doc', content: [] }, kind: item.category === 'Новости' ? 'NEWS' : 'ARTICLE', publishedAt: '2026-10-01T00:00:00.000Z', coverMedia: null }));
     const projectItems = projects.map((item, index) => ({ id: item.id, slug: item.slug, title: item.title, summary: item.summary, body: { type: 'doc', content: [] }, kind: ['PROJECT', 'PROGRAM', 'INITIATIVE'][index], publishedAt: '2026-10-01T00:00:00.000Z', coverMedia: null }));

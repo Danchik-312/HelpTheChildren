@@ -1,12 +1,13 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { siteApi } from '../api/contentApi';
 import OrganizationPage from './OrganizationPage';
 
-jest.mock('../api/contentApi', () => ({ siteApi: { get: jest.fn(), updateOrganization: jest.fn() } }));
-let mockRole = 'ADMIN';
-jest.mock('../auth/AuthContext', () => ({ useAuth: () => ({ user: { role: mockRole } }) }));
+vi.mock('../api/contentApi', () => ({ siteApi: { get: vi.fn(), updateOrganization: vi.fn() } }));
+const auth = vi.hoisted(() => ({ role: 'ADMIN' }));
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ user: { role: auth.role } }) }));
 
-beforeEach(() => { mockRole = 'ADMIN'; jest.clearAllMocks(); });
+beforeEach(() => { auth.role = 'ADMIN'; vi.clearAllMocks(); });
 
 test('загружает агрегат сайта и сохраняет описание структурированным JSON', async () => {
   siteApi.get.mockResolvedValue({ organization: { displayName: 'Фонд', shortDescription: 'Кратко', description: { type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'О фонде' }] }] } } });
@@ -19,7 +20,7 @@ test('загружает агрегат сайта и сохраняет опи�
 });
 
 test('для редактора форма доступна только для чтения', async () => {
-  mockRole = 'EDITOR';
+  auth.role = 'EDITOR';
   siteApi.get.mockResolvedValue({ organization: { displayName: 'Фонд' } });
   render(<OrganizationPage />);
   expect(await screen.findByText(/Доступ только для чтения/)).toBeInTheDocument();

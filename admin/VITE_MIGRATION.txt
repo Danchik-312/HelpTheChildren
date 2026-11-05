@@ -1,0 +1,24 @@
+Миграция административной панели на Vite
+
+Команды из каталога admin:
+  npm start          — dev-сервер http://localhost:3001
+  npm run build      — production-сборка в dist/
+  npm test -- --run   — однократный запуск Vitest
+  npm run preview    — локальный просмотр dist/ на порту 3001
+
+Порт 3001 фиксирован (strictPort), поскольку backend проверяет Origin.
+Vite не проксирует API: API client сохраняет абсолютный адрес, credentials и CSRF.
+
+Переменная окружения:
+  VITE_API_URL — публичный адрес API, встраиваемый во frontend во время сборки.
+По умолчанию используется http://localhost:4000/api/v1.
+Для deployment задайте адрес перед npm run build. Не храните секреты в VITE_*.
+
+Развёртывайте содержимое dist/. Для маршрутов BrowserRouter настройте SPA fallback
+на /index.html. API и медиа обслуживаются backend отдельно.
+
+Примечание для npm 10.8.1: при переходе на Vitest 4 resolver optional peers
+падал с edgesOut. Одноразово при миграции использован --legacy-peer-deps,
+затем выполнены обычные npm install --package-lock-only и npm install без
+этого флага: обязательные peers восстановлены, npm ls --all проходит.
+Для последующих установок используйте npm ci, без постоянного legacy-флага.

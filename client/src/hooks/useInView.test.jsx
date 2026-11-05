@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import useInView from './useInView';
 
@@ -27,7 +27,7 @@ test('shows content when IntersectionObserver is unavailable', () => {
 });
 
 test('shows content when IntersectionObserver cannot be initialized', () => {
-  window.IntersectionObserver = jest.fn(() => {
+  window.IntersectionObserver = vi.fn(function IntersectionObserver() {
     throw new Error('IntersectionObserver initialization failed');
   });
   render(<Probe />);
@@ -36,12 +36,12 @@ test('shows content when IntersectionObserver cannot be initialized', () => {
 
 test('observes a DOM node attached after the hook initially rendered without one', () => {
   let callback;
-  const observe = jest.fn();
-  window.IntersectionObserver = jest.fn(function IntersectionObserver(handler) {
+  const observe = vi.fn();
+  window.IntersectionObserver = vi.fn(function IntersectionObserver(handler) {
     callback = handler;
     this.observe = observe;
-    this.unobserve = jest.fn();
-    this.disconnect = jest.fn();
+    this.unobserve = vi.fn();
+    this.disconnect = vi.fn();
   });
   const { rerender } = render(<DeferredProbe show={false} />);
   expect(observe).not.toHaveBeenCalled();

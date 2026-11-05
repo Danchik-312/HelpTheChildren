@@ -1,0 +1,106 @@
+Итог миграции CRA → Vite
+Дата: 4 ноября 2026
+Проект: D:\.Work\detki
+Ветка: feature/site-layout-contacts-covers
+
+Результат
+Оба существующих приложения мигрированы на Vite 6.4.5 и Vitest 4.1.12.
+Сохранены Node 20.16, React/Router/Tiptap и версии прямых прикладных зависимостей.
+Порты: client 3000, admin 3001, strictPort. Production output: dist/.
+Изменения production-исходников ограничены чтением публичных VITE_* env в трех файлах.
+Hero, дизайн/CSS, формы, бизнес-логика, авторизация, backend, Prisma и БД не менялись.
+Git commit/push/merge не выполнялись. Исходная рабочая копия была чистой.
+
+Работа субагентов
+code-mapper: read-only аудит CRA/Webpack/Jest, env, JSX/SVG, ресурсов и 32 исходных тестовых файлов.
+react-specialist: client package/lock/config/HTML/env/SVG/JSX, порт 3000 и документация.
+fullstack-developer: admin package/lock/config/HTML/env/JSX, порт 3001 и документация.
+test-automator: перенос всех исходных тестов на Vitest; ESM mocks, jsdom, RTL cleanup; новые env/API/Tiptap проверки.
+debugger: подтверждение причин jsdom FileList, устаревших fixtures и npm optional-peer resolver; диагностика без правок.
+security-auditor: независимая проверка env/cookie/CSRF/Origin/CORS/media и npm audit; повторный аудит после исправлений.
+code-reviewer: независимый review scopes, конфигураций, зависимостей, сохранения assertions и итоговых обновлений.
+Главный агент: согласование границ/исправлений, проверка production-diff и runtime versions, самостоятельные полные тесты, dev HTTP smoke и production assets.
+
+Выполненные проверки
+client: npm test -- --run — 14 файлов, 43/43, exit 0; независимо повторено главным агентом на Vitest 4.1.12.
+admin: npm test -- --run — 21 файл, 48/48, exit 0; независимо повторено главным агентом на Vitest 4.1.12.
+Все исходные 32 test-файла сохранены; добавлены 3 test-файла. Отключенных тестов нет.
+client: npm run build — PASS, 115 modules, JS 310.67 kB.
+admin: npm run build — PASS, 148 modules, JS 797.40 kB.
+Оба npm ls --all — exit 0, без peer dependency problems.
+Оба npm audit --json и npm audit --omit=dev --json — 0 vulnerabilities, exit 0.
+git diff --check — PASS.
+Главный агент: HTTP 200 для entry/deep links, JSX, SVG named component, favicon, Tiptap/MediaPicker/CSS Module; production entry/assets существуют.
+Проверочные dev-серверы остановлены; финальная проверка optimizer/shutdown — PASS.
+
+Исправленные проблемы
+Jest/CRA wrappers заменены Vitest; mocks переведены в ESM, виртуальные router workarounds удалены.
+MediaPage: jsdom synthetic FileList не проходит native required validation; handler/API unit-тесты используют submit с сохранением FormData/rights/alt/error assertions и новым отрицательным сценарием без файла.
+PublicationsPage: fixture приведена к существующим categoriesApi/categoryId и реальному MemoryRouter.
+StructuredContent: положительная fixture не содержит запрещенный src; добавлена отрицательная проверка mediaId+src. Production sanitization сохранена.
+useInView: throwing constructor mock использует function для корректной семантики Vitest 4.
+Подтвержденные advisories dev toolchain закрыты Vitest/mocker 4.1.12, удалением tinypool и source-map-js 1.2.2.
+Ошибка npm10 edgesOut обойдена одноразовым legacy-peer-deps; затем обычные lock-only/install и peer validation прошли без legacy. Постоянная .npmrc или override не добавлялись.
+
+Оставшиеся ограничения
+Admin build предупреждает о чанке 797.40 kB > 500 kB. Разбиение приложения не выполнялось в рамках миграции.
+Браузерные E2E, визуальное сравнение и реальные cookie/CSRF/CORS/авторизация с backend/БД не запускались.
+Настоящий Tiptap проверен в jsdom: JSON, toolbar callback и read-only; браузерная геометрия/selection этим не подтверждены.
+Для deployment нужны VITE_* вместо REACT_APP_*, публикация dist/ и SPA fallback; подробности в VITE_MIGRATION.txt обоих приложений.
+Локальный client/README.md также обновлен исполнителем; файл игнорируется Git. Команды продублированы в отслеживаемом VITE_MIGRATION.txt.
+
+Полный список измененных и новых файлов (статусы Git; D — согласованные удаления)
+M	admin/package-lock.json
+M	admin/package.json
+D	admin/public/index.html
+D	admin/scripts/test.js
+M	admin/src/api/apiClient.js
+M	admin/src/api/apiClient.test.js
+M	admin/src/api/contentApi.test.js
+M	admin/src/auth/AreaRoute.test.js
+M	admin/src/auth/AuthContext.test.js
+M	admin/src/auth/ProtectedRoute.test.js
+M	admin/src/components/RichTextEditor.test.js
+M	admin/src/components/StructuredContent.test.js
+M	admin/src/layout/Sidebar.test.js
+M	admin/src/pages/CategoriesPage.test.js
+M	admin/src/pages/ContentFormPage.test.js
+M	admin/src/pages/DashboardPage.test.js
+M	admin/src/pages/HeroPage.test.js
+M	admin/src/pages/MediaPage.test.js
+M	admin/src/pages/OrganizationPage.test.js
+M	admin/src/pages/PublicationCreatePage.test.js
+M	admin/src/pages/PublicationFormPage.test.js
+M	admin/src/pages/PublicationsPage.test.js
+M	admin/src/pages/SiteSettingsPages.test.js
+M	admin/src/setupTests.js
+M	client/package-lock.json
+M	client/package.json
+D	client/public/index.html
+D	client/scripts/test.js
+M	client/src/App.test.js
+M	client/src/components/ChildrenSection/ChildrenSection.test.jsx
+M	client/src/components/Footer/Footer.test.jsx
+M	client/src/components/Header/Header.test.jsx
+M	client/src/components/HelpSection/HelpSection.test.jsx
+M	client/src/components/Hero/Hero.test.jsx
+M	client/src/components/InterfaceStates.test.jsx
+M	client/src/components/ProjectsSection/ProjectsSection.test.jsx
+M	client/src/components/StructuredContent/StructuredContent.jsx
+M	client/src/components/StructuredContent/StructuredContent.test.jsx
+M	client/src/hooks/useInView.test.jsx
+M	client/src/pages/ContentFiltering.test.jsx
+M	client/src/pages/HomePage/HomePage.test.jsx
+M	client/src/services/contentRepository.js
+M	client/src/services/contentRepository.test.js
+A	admin/VITE_MIGRATION.txt
+A	admin/index.html
+A	admin/src/api/apiClient.env.test.js
+A	admin/src/components/RichTextEditor.integration.test.js
+A	admin/vite.config.mjs
+A	client/VITE_MIGRATION.txt
+A	client/VITE_MIGRATION_REPORT.txt
+A	client/index.html
+A	client/src/services/viteEnv.test.jsx
+A	client/src/setupTests.js
+A	client/vite.config.mjs

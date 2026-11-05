@@ -1,18 +1,13 @@
-import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import HelpSection from './HelpSection';
 
-jest.mock('react-router/dom', () => {
-  const { TextDecoder, TextEncoder } = require('util');
-  global.TextDecoder = TextDecoder;
-  global.TextEncoder = TextEncoder;
-  return require('react-router/dist/development/dom-export.js');
-}, { virtual: true });
 
-jest.mock('../../hooks/useContent', () => ({
-  useCollection: () => ({ data: require('../../data/content').helpMethods, loading: false, error: null }),
-}));
+vi.mock('../../hooks/useContent', async () => {
+  const { helpMethods } = await import('../../data/content');
+  return { useCollection: () => ({ data: helpMethods, loading: false, error: null }) };
+});
 
 test('shows exactly three non-payment help routes', () => {
   render(<MemoryRouter><HelpSection /></MemoryRouter>);

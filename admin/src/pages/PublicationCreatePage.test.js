@@ -1,15 +1,16 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import PublicationFormPage from './PublicationFormPage';
 import { categoriesApi, publicationsApi } from '../api/contentApi';
 
-jest.mock('../api/contentApi', () => ({ publicationsApi: { get: jest.fn(), create: jest.fn(), update: jest.fn(), publish: jest.fn(), unpublish: jest.fn() }, categoriesApi: { list: jest.fn() } }));
-jest.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => false }) }));
-jest.mock('../components/RichTextEditor', () => () => <div>Редактор содержимого</div>);
-jest.mock('../components/MediaPicker', () => () => null);
-jest.mock('../components/PrivateMediaPreview', () => () => null);
-jest.mock('react-router-dom', () => ({
+vi.mock('../api/contentApi', () => ({ publicationsApi: { get: vi.fn(), create: vi.fn(), update: vi.fn(), publish: vi.fn(), unpublish: vi.fn() }, categoriesApi: { list: vi.fn() } }));
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => false }) }));
+vi.mock('../components/RichTextEditor', () => ({ default: () => <div>Редактор содержимого</div> }));
+vi.mock('../components/MediaPicker', () => ({ default: () => null }));
+vi.mock('../components/PrivateMediaPreview', () => ({ default: () => null }));
+vi.mock('react-router-dom', () => ({
   Link: ({ to, children }) => <a href={to}>{children}</a>,
-  useNavigate: () => jest.fn(),
+  useNavigate: () => vi.fn(),
   useParams: () => ({}),
   useSearchParams: () => [new URLSearchParams('kind=ARTICLE')],
 }));

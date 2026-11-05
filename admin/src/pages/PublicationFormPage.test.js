@@ -1,15 +1,16 @@
+import { vi } from 'vitest';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { categoriesApi, publicationsApi } from '../api/contentApi';
 import PublicationFormPage, { normalizeBody, publicationSignature } from './PublicationFormPage';
 
-jest.mock('../api/contentApi', () => ({ publicationsApi: { get: jest.fn(), create: jest.fn(), update: jest.fn(), publish: jest.fn(), unpublish: jest.fn() }, categoriesApi: { list: jest.fn() } }));
-jest.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => true }) }));
-jest.mock('../components/RichTextEditor', () => ({ value, onChange }) => <div><span>{value.content?.[0]?.content?.[0]?.text}</span><button type="button" onClick={() => onChange({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Новый текст' }] }] })}>Изменить текст</button></div>);
-jest.mock('../components/MediaPicker', () => () => null);
-jest.mock('../components/PrivateMediaPreview', () => () => null);
-jest.mock('react-router-dom', () => ({
+vi.mock('../api/contentApi', () => ({ publicationsApi: { get: vi.fn(), create: vi.fn(), update: vi.fn(), publish: vi.fn(), unpublish: vi.fn() }, categoriesApi: { list: vi.fn() } }));
+vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => true }) }));
+vi.mock('../components/RichTextEditor', () => ({ default: ({ value, onChange }) => <div><span>{value.content?.[0]?.content?.[0]?.text}</span><button type="button" onClick={() => onChange({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Новый текст' }] }] })}>Изменить текст</button></div> }));
+vi.mock('../components/MediaPicker', () => ({ default: () => null }));
+vi.mock('../components/PrivateMediaPreview', () => ({ default: () => null }));
+vi.mock('react-router-dom', () => ({
   Link: ({ to, children, ...props }) => <a href={to} {...props}>{children}</a>,
-  useNavigate: () => jest.fn(),
+  useNavigate: () => vi.fn(),
   useParams: () => ({ id: 'publication-1' }),
   useSearchParams: () => [new URLSearchParams('kind=NEWS')],
 }));
@@ -21,7 +22,7 @@ const publication = {
 };
 
 beforeEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
   categoriesApi.list.mockResolvedValue({ items: [{ id: 'category-1', name: 'Помощь детям', slug: 'help' }] });
 });
 

@@ -1,4 +1,4 @@
-const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
+const API_BASE_URL = (import.meta.env.VITE_API_URL || 'http://localhost:4000/api/v1').replace(/\/$/, '');
 const API_ORIGIN = new URL(API_BASE_URL, window.location.origin).origin;
 const pageGroups = { organizationSections: 'ABOUT', helpMethods: 'GIVE_HELP', getHelpDirections: 'GET_HELP', generalPages: 'GENERAL' };
 const endpointFor = {
@@ -9,12 +9,12 @@ const endpointFor = {
 };
 const projectCategories = { PROJECT: 'Проекты', PROGRAM: 'Программы', INITIATIVE: 'Инициативы' };
 const publicationKinds = { NEWS: 'Новости', ARTICLE: 'Статьи' };
-const rootAppRoute = /^\/(?:who-we|what-we-do|give-help|get-help|children|publications|stories|contacts|information)?\/?$/i;
-const detailAppRoute = /^\/(?:who-we|give-help|get-help|children|publications|stories|contacts|projects|information)\/[a-z0-9][a-z0-9-]*\/?$/i;
+const rootAppRoute = /^\/(?:who-we|what-we-do|give-help|get-help|children|publications|stories|information)?\/?$/i;
+const detailAppRoute = /^\/(?:who-we|give-help|get-help|children|publications|stories|projects|information)\/[a-z0-9][a-z0-9-]*\/?$/i;
 const isSafeAppRoute = value => typeof value === 'string' && (rootAppRoute.test(value) || detailAppRoute.test(value));
 const UUID_PATH = /\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const mediaBaseUrl = new URL((process.env.REACT_APP_MEDIA_BASE_URL || `${API_BASE_URL}/public/media`).replace(/\/$/, ''), API_ORIGIN);
-const allowedVideoHosts = new Set((process.env.REACT_APP_ALLOWED_VIDEO_HOSTS || 'youtube.com,www.youtube.com,youtu.be,vimeo.com,player.vimeo.com').split(',').map(value => value.trim().toLowerCase()).filter(Boolean));
+const mediaBaseUrl = new URL((import.meta.env.VITE_MEDIA_BASE_URL || `${API_BASE_URL}/public/media`).replace(/\/$/, ''), API_ORIGIN);
+const allowedVideoHosts = new Set((import.meta.env.VITE_ALLOWED_VIDEO_HOSTS || 'youtube.com,www.youtube.com,youtu.be,vimeo.com,player.vimeo.com').split(',').map(value => value.trim().toLowerCase()).filter(Boolean));
 
 function buildPath(path, params = {}) {
   const [pathname, existingQuery = ''] = path.split('?');
@@ -80,11 +80,6 @@ function mapHero(slide) {
 }
 
 async function listPage(collection, params = {}) {
-  if (collection === 'contacts') {
-    const site = await getJson('/public/site');
-    const items = (site?.contacts || []).map(contact => ({ id: contact.id, slug: contact.id, title: contact.label || contact.type, description: contact.value || '', to: contact.href || '/contacts', category: 'Контакты', status: 'published' }));
-    return { items, meta: { page: 1, pageSize: items.length, total: items.length, totalPages: items.length ? 1 : 0 } };
-  }
   const endpoint = endpointFor[collection];
   if (!endpoint) throw new Error(`Unknown content collection: ${collection}`);
   const result = await requestJson(buildPath(endpoint, params));
@@ -101,7 +96,7 @@ export const contentRepository = {
   async homepage() { const data = await getJson('/public/homepage'); return data?.items || []; },
   async navigation() { const data = await getJson('/public/navigation'); return (data?.items || []).filter(item => isSafeAppRoute(item.url)).map(item => ({ title: item.label, to: item.url })); },
   async findBySlug(collection, slug) {
-    if (collection === 'contacts' || collection === 'hero') return (await this.list(collection)).find(item => item.slug === slug) ?? null;
+    if (collection === 'hero') return (await this.list(collection)).find(item => item.slug === slug) ?? null;
     const endpoint = endpointFor[collection];
     if (!endpoint) throw new Error(`Unknown content collection: ${collection}`);
     const apiResource = pageGroups[collection] ? `pages/${pageGroups[collection]}` : collection;
