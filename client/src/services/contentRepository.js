@@ -9,7 +9,7 @@ const endpointFor = {
 };
 const projectCategories = { PROJECT: 'Проекты', PROGRAM: 'Программы', INITIATIVE: 'Инициативы' };
 const publicationKinds = { NEWS: 'Новости', ARTICLE: 'Статьи' };
-const rootAppRoute = /^\/(?:who-we|what-we-do|give-help|get-help|children|publications|stories|information)?\/?$/i;
+const rootAppRoute = /^\/(?:who-we|what-we-do|give-help|get-help|children|publications|stories|information|partners)?\/?$/i;
 const detailAppRoute = /^\/(?:who-we|give-help|get-help|children|publications|stories|projects|information)\/[a-z0-9][a-z0-9-]*\/?$/i;
 const isSafeAppRoute = value => typeof value === 'string' && (rootAppRoute.test(value) || detailAppRoute.test(value));
 const UUID_PATH = /\/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -51,6 +51,11 @@ export function publicMediaUrl(value, kind = 'IMAGE') {
   } catch { return undefined; }
 }
 
+export function publicImageUrlById(mediaId) {
+  if (typeof mediaId !== 'string' || !UUID_PATH.test('/' + mediaId) || mediaId.length !== 36) return undefined;
+  return publicMediaUrl(mediaBaseUrl.href + '/' + mediaId);
+}
+
 function mapContent(resource, item) {
   const description = item.excerpt || item.summary || item.description || item.approvedHealthSummary || '';
   const displayName = item.publicDisplayName || item.title;
@@ -58,7 +63,7 @@ function mapContent(resource, item) {
   const kindLabel = publicationKinds[item.kind] || projectCategories[item.kind] || '';
   return {
     ...item,
-    to: item.to || item.href || (pageGroups[resource] ? `${resource === 'helpMethods' ? '/give-help' : resource === 'getHelpDirections' ? '/get-help' : resource === 'generalPages' ? '/information' : '/who-we'}/${item.slug}` : undefined),
+    to: resource === 'generalPages' && item.slug === 'partners' ? '/partners' : item.to || item.href || (pageGroups[resource] ? `${resource === 'helpMethods' ? '/give-help' : resource === 'getHelpDirections' ? '/get-help' : resource === 'generalPages' ? '/information' : '/who-we'}/${item.slug}` : undefined),
     title: resource === 'children' ? displayName : item.title,
     name: displayName, description, disease: item.approvedHealthSummary || '', age: item.publicAgeLabel || '',
     kind: item.kind, kindLabel, categories, categoryNames: categories.map(category => category.name),
@@ -66,6 +71,13 @@ function mapContent(resource, item) {
     date: item.publishedAt, body: item.body || item.storyBody || null,
     instructions: pageGroups[resource] ? item.body || null : null,
     image: publicMediaUrl(item.coverMedia?.url, item.coverMedia?.kind), imageAlt: item.coverMedia?.alt || '',
+    ...(resource === 'publications' && {
+      sidePhotos: Array.isArray(item.sidePhotos) ? item.sidePhotos.flatMap(photo => {
+        const url = publicMediaUrl(photo?.url);
+        if (!url || typeof photo.mediaId !== 'string') return [];
+        return [{ mediaId: photo.mediaId, url, altText: photo.altText || '', caption: photo.caption || '' }];
+      }) : [],
+    }),
   };
 }
 

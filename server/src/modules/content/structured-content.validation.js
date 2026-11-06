@@ -163,7 +163,10 @@ function validateNode(node, context, path, state, depth, expected) {
   if (nodeType === 'orderedList' && node.attrs !== undefined) {
     if (!isPlainObject(node.attrs)) addIssue(context, [...path, 'attrs'], 'Атрибуты списка некорректны.');
     else {
-      hasOnlyKeys(node.attrs, new Set(['start']), context, [...path, 'attrs']);
+      hasOnlyKeys(node.attrs, new Set(['start', 'type']), context, [...path, 'attrs']);
+      if (node.attrs.type != null && !['1', 'a', 'A', 'i', 'I'].includes(node.attrs.type)) {
+        addIssue(context, [...path, 'attrs', 'type'], 'Тип нумерации списка некорректен.');
+      }
       if (!Number.isInteger(node.attrs.start) || node.attrs.start < 1 || node.attrs.start > 1_000_000) addIssue(context, [...path, 'attrs', 'start'], 'Начальный номер списка некорректен.');
     }
   }

@@ -1,12 +1,19 @@
 import { vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { categoriesApi, publicationsApi } from '../api/contentApi';
 import PublicationFormPage, { normalizeBody, publicationSignature } from './PublicationFormPage';
 
 vi.mock('../api/contentApi', () => ({ publicationsApi: { get: vi.fn(), create: vi.fn(), update: vi.fn(), publish: vi.fn(), unpublish: vi.fn() }, categoriesApi: { list: vi.fn() } }));
 vi.mock('../auth/AuthContext', () => ({ useAuth: () => ({ canPublish: () => true }) }));
 vi.mock('../components/RichTextEditor', () => ({ default: ({ value, onChange }) => <div><span>{value.content?.[0]?.content?.[0]?.text}</span><button type="button" onClick={() => onChange({ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Новый текст' }] }] })}>Изменить текст</button></div> }));
-vi.mock('../components/MediaPicker', () => ({ default: () => null }));
+vi.mock('../components/MediaPicker', () => ({
+  default: ({ onChange, onClose, excludedIds }) => <div role="dialog">
+    {['photo-1', 'photo-2'].filter(id => !excludedIds.includes(id)).map(id => <button type="button" key={id} onClick={() => {
+      onChange({ id, kind: 'IMAGE', originalName: id + '.png' });
+      onClose();
+    }}>{id}</button>)}
+  </div>,
+}));
 vi.mock('../components/PrivateMediaPreview', () => ({ default: () => null }));
 vi.mock('react-router-dom', () => ({
   Link: ({ to, children, ...props }) => <a href={to} {...props}>{children}</a>,
@@ -100,4 +107,51 @@ test('считает изменение категории несохранён�
   expect(screen.getByText('Есть несохранённые изменения')).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Сохранить черновик' }));
   await waitFor(() => expect(publicationsApi.update).toHaveBeenCalledWith('publication-1', expect.objectContaining({ categoryIds: ['category-1'] })));
+});
+
+test('добавляет, переставляет, сохраняет и повторно открывает боковые фотографии', async () => {
+  let saved = publication;
+  publicationsApi.get.mockImplementation(() => Promise.resolve(saved));
+  publicationsApi.update.mockImplementation((_id, payload) => {
+    saved = {
+      ...saved, ...payload, version: saved.version + 1,
+      sidePhotos: payload.sidePhotos.map(photo => ({
+        ...photo, media: { id: photo.mediaId, kind: 'IMAGE', originalName: photo.mediaId + '.png' },
+      })),
+    };
+    return Promise.resolve(saved);
+  });
+  const form = render(<PublicationFormPage />);
+  await screen.findByText('Старый текст');
+
+  const addPhoto = async id => {
+    fireEvent.click(screen.getByRole('button', { name: 'Добавить фотографию' }));
+    const picker = await screen.findByRole('dialog');
+    fireEvent.click(within(picker).getByRole('button', { name: id }));
+  };
+  await addPhoto('photo-1');
+  await addPhoto('photo-2');
+  fireEvent.click(screen.getByRole('button', { name: 'Переместить фото 2 выше' }));
+  const firstPhoto = within(screen.getAllByRole('listitem')[0]);
+  expect(firstPhoto.getByText('photo-2.png')).toBeInTheDocument();
+  fireEvent.change(firstPhoto.getByLabelText('Alt-текст'), { target: { value: 'Дети в парке' } });
+  fireEvent.change(firstPhoto.getByLabelText('Подпись'), { target: { value: 'На прогулке' } });
+  expect(screen.getByText('Есть несохранённые изменения')).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Сохранить черновик' }));
+  await waitFor(() => expect(publicationsApi.update).toHaveBeenCalledWith('publication-1', expect.objectContaining({
+    sidePhotos: [
+      { mediaId: 'photo-2', altText: 'Дети в парке', caption: 'На прогулке' },
+      { mediaId: 'photo-1', altText: '', caption: '' },
+    ],
+  })));
+  await waitFor(() => expect(screen.queryByText('Есть несохранённые изменения')).not.toBeInTheDocument());
+
+  form.unmount();
+  render(<PublicationFormPage />);
+  expect(await screen.findByDisplayValue('На прогулке')).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Убрать фото 2' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Убрать фото 1' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Сохранить черновик' }));
+  await waitFor(() => expect(publicationsApi.update).toHaveBeenLastCalledWith('publication-1', expect.objectContaining({ version: 4, sidePhotos: [] })));
 });

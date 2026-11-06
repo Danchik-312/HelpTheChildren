@@ -515,6 +515,8 @@ model OrganizationProfile {
   shortDescription String?
   description      Json?
   logoPath         String?
+  brandColor       String   @default("#DC6601")
+  accentColor      String   @default("#BFFF00")
   updatedById      String   @db.Uuid
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

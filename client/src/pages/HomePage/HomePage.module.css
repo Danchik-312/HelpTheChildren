@@ -1,17 +1,17 @@
 .page {
-  --home-color-blue: #6495ed;
-  --home-color-primary: var(--home-color-blue);
+  --home-color-highlight: var(--color-accent);
+  --home-color-primary: var(--home-color-highlight);
   --home-color-surface: var(--color-surface);
 
   background: var(--home-color-surface);
 }
 
 .page > section {
-  --color-on-primary: #152a46;
-  --color-border-light: rgb(21 42 70 / 35%);
+  --color-on-primary: #231b16;
+  --color-border-light: rgb(35 27 22 / 48%);
 }
 
-.surfaceBlock, .blueBlock {
+.surfaceBlock, .highlightBlock {
   --home-section-text: var(--color-text-primary);
   --home-section-border: var(--color-border);
   --home-color-primary: var(--home-color-surface);
@@ -20,11 +20,12 @@
 }
 
 .surfaceBlock { --home-color-surface: var(--color-surface); }
-.blueBlock {
-  --home-color-surface: var(--home-color-blue);
-  --color-text-primary: #152a46;
-  --color-text-secondary: #152a46;
-  --color-primary: #152a46;
-  --color-primary-hover: #0b1e35;
-  --color-border: rgb(21 42 70 / 35%);
+.highlightBlock {
+  --home-color-surface: var(--home-color-highlight);
+  --color-text-primary: var(--color-on-accent);
+  --color-text-secondary: var(--color-on-accent);
+  --color-primary: var(--color-on-accent);
+  --color-primary-hover: var(--color-on-accent);
+  --color-on-primary: var(--color-accent);
+  --color-border: color-mix(in srgb, var(--color-on-accent) 48%, transparent);
 }

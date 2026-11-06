@@ -63,3 +63,23 @@ test('does not upload when the submitted form has no file', async () => {
   expect(await screen.findByRole('alert')).toHaveTextContent('Выберите файл.');
   expect(mediaApi.upload).not.toHaveBeenCalled();
 });
+
+test('показывает только доступные для добавления фото и позволяет перейти на следующую страницу', async () => {
+  mediaApi.list.mockResolvedValueOnce({
+    items: [
+      { id: 'selected', kind: 'IMAGE', status: 'READY', originalName: 'selected.png' },
+      { id: 'pending', kind: 'IMAGE', status: 'PROCESSING', originalName: 'pending.png' },
+    ],
+    meta: { totalPages: 2 },
+  }).mockResolvedValueOnce({
+    items: [{ id: 'available', kind: 'IMAGE', status: 'READY', originalName: 'available.png' }],
+    meta: { totalPages: 2 },
+  });
+  render(<MediaPicker readyOnly excludedIds={['selected']} onChange={vi.fn()} onClose={vi.fn()} />);
+  expect(await screen.findByText('На этой странице нет подходящих файлов.')).toBeInTheDocument();
+  expect(screen.queryByText('selected.png')).not.toBeInTheDocument();
+  expect(screen.queryByText('pending.png')).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Далее' }));
+  expect(await screen.findByText('available.png')).toBeInTheDocument();
+  expect(mediaApi.list).toHaveBeenLastCalledWith({ pageSize: 100, page: 2, kind: 'IMAGE' });
+});

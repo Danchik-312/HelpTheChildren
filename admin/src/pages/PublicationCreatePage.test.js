@@ -15,18 +15,18 @@ vi.mock('react-router-dom', () => ({
   useSearchParams: () => [new URLSearchParams('kind=ARTICLE')],
 }));
 
-test('создаёт материал как черновик через реальный API и не показывает публикацию без разрешения', async () => {
+test('создаёт черновик без краткого описания и скрывает публикацию без разрешения', async () => {
   categoriesApi.list.mockResolvedValue({ items: [] });
-  publicationsApi.create.mockResolvedValue({ id: 'article-1', kind: 'ARTICLE', title: 'Материал', slug: 'material', excerpt: 'Описание', body: { type: 'doc', content: [] }, status: 'DRAFT' });
+  publicationsApi.create.mockResolvedValue({ id: 'article-1', kind: 'ARTICLE', title: 'Материал', slug: 'material', excerpt: '', body: { type: 'doc', content: [] }, status: 'DRAFT' });
   render(<PublicationFormPage />);
   fireEvent.change(screen.getByLabelText('Slug'), { target: { value: 'material' } });
   fireEvent.change(screen.getByLabelText('Заголовок'), { target: { value: 'Материал' } });
-  fireEvent.change(screen.getByLabelText('Краткое описание'), { target: { value: 'Описание' } });
+  expect(screen.getByLabelText('Краткое описание')).not.toBeRequired();
   fireEvent.click(screen.getByRole('button', { name: 'Сохранить черновик' }));
 
   await waitFor(() => expect(publicationsApi.create).toHaveBeenCalledWith(expect.objectContaining({
-    kind: 'ARTICLE', title: 'Материал', slug: 'material', excerpt: 'Описание',
-    body: { type: 'doc', content: [{ type: 'paragraph' }] }, coverMediaId: null,
+    kind: 'ARTICLE', title: 'Материал', slug: 'material', excerpt: '',
+    body: { type: 'doc', content: [{ type: 'paragraph' }] }, coverMediaId: null, sidePhotos: [],
   })));
   expect(await screen.findByText('Редактор содержимого')).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Опубликовать' })).not.toBeInTheDocument();

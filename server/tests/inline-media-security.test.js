@@ -71,12 +71,16 @@ test('inline-media synchronization removes stale links for every content type', 
 test('child publication accepts ready rights-cleared media without legacy consent', async t => {
   let updated = false;
   const child = {
-    id: 'child-id', version: 2, status: 'DRAFT', coverMediaId: null,
+    id: 'child-id', version: 2, status: 'DRAFT', coverMediaId: null, publicDisplayName: 'Псевдоним',
     storyBody: bodyWithImage,
     media: [{ mediaId: imageId, media: { status: 'READY', rightsConfirmed: true } }],
   };
   const tx = {
-    childProfile: { findFirst: async () => child, update: async () => { updated = true; return { ...child, status: 'PUBLISHED' }; } },
+    childProfile: {
+      findFirst: async () => child,
+      updateMany: async () => { updated = true; return { count: 1 }; },
+      findUnique: async () => ({ ...child, status: 'PUBLISHED' }),
+    },
     mediaAsset: {
       findFirst: async () => ({ id: imageId, status: 'READY', kind: 'IMAGE', rightsConfirmed: true }),
       update: async () => ({ id: imageId, visibility: 'PUBLIC' }),
@@ -119,7 +123,15 @@ test('changing a published cover atomically requires ready rights-cleared media 
     },
     auditLog: { create: async () => ({ id: 'audit-id' }) },
   };
-  stub(t, prisma, '$transaction', async callback => callback(tx));
+  stub(t, prisma, '$transaction', async callback => {
+    const before = updated;
+    try {
+      return await callback(tx);
+    } catch (error) {
+      updated = before;
+      throw error;
+    }
+  });
 
   await assert.rejects(
     content.update('publications', 'publication-id', { version: 2, coverMediaId: imageId }, actor, 'request-id'),
@@ -202,4 +214,27 @@ test('public stream rejects a formerly approved child image removed from the cur
   };
   stub(t, prisma.mediaAsset, 'findFirst', async () => item);
   await assert.rejects(media.publicStream(imageId), error => error.status === 404);
+});
+
+test('publishing a child requires a public display name, and publishing a story requires consent', async t => {
+  const child = { id: 'child-id', version: 1, status: 'DRAFT', publicDisplayName: '' };
+  const story = { id: 'story-id', version: 1, status: 'DRAFT', consentConfirmedAt: null };
+  const tx = {
+    childProfile: { findFirst: async () => child },
+    story: { findFirst: async () => story },
+  };
+  stub(t, prisma, '$transaction', async callback => callback(tx));
+  await assert.rejects(content.setPublication('children', child.id, 1, true, actor), /публичное имя/);
+  await assert.rejects(content.setPublication('stories', story.id, 1, true, actor), /согласие/);
+});
+
+test('an edit cannot clear the public name of a published child', async t => {
+  const tx = {
+    childProfile: {
+      updateMany: async () => ({ count: 1 }),
+      findUnique: async () => ({ status: 'PUBLISHED' }),
+    },
+  };
+  stub(t, prisma, '$transaction', async callback => callback(tx));
+  await assert.rejects(content.update('children', 'child-id', { version: 1, publicDisplayName: '' }, actor), /публичное имя/);
 });

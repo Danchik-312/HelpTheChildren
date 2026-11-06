@@ -1,19 +1,19 @@
-.footer { background: var(--color-primary); color: var(--color-on-primary); padding: 40px 0 32px; }
-.container { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); column-gap: 64px; row-gap: 24px; align-items: start; }
-.brandColumn { display: grid; grid-template-columns: 136px minmax(0, 1fr); gap: 32px; min-width: 0; align-items: start; }
-.brand { display: block; width: 136px; max-width: 100%; transition: opacity var(--transition-default); }
-.brand img { width: 100%; height: auto; object-fit: contain; }
-.contacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; padding-top: 8px; font-style: normal; }
+.footer { background: var(--color-brand-orange); color: var(--color-on-brand-orange); padding: 24px 0 18px; }
+.container { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 320px); column-gap: 32px; row-gap: 14px; align-items: start; }
+.brandColumn { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 20px; min-width: 0; align-items: start; }
+.brand { display: block; width: 104px; max-width: 100%; overflow: hidden; transition: opacity var(--transition-default); }
+.brand img { width: 100%; height: auto; display: block; object-fit: contain; transform: scale(1.12); }
+.contacts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; padding-top: 0; font-style: normal; }
 .contact { display: grid; align-content: start; gap: 4px; min-width: 0; overflow-wrap: anywhere; }
-.contact span { font-size: 14.1px; line-height: 20px; opacity: .85; }
+.contact span { font-size: 14.1px; line-height: 20px; }
 .contact strong, .contact a { font-weight: 400; }
 .contact a { width: fit-content; border-bottom: 1px solid var(--color-border-light); transition: border-color var(--transition-default), opacity var(--transition-default); }
 .content { width: 100%; min-width: 0; }
-.map, .mapFallback { width: 100%; aspect-ratio: 1; border: 1px solid var(--color-border-light); background: var(--color-surface); }
+.map, .mapFallback { width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--color-border-light); background: var(--color-surface); }
 .map { position: relative; overflow: hidden; }
 .map iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; }
 .mapFallback { display: grid; place-items: center; padding: 24px; color: var(--color-text-primary); text-align: center; }
-.copyright { grid-column: 1 / -1; font-size: 14.1px; line-height: 20px; padding-top: 16px; border-top: 1px solid var(--color-border-light); }
+.copyright { grid-column: 1 / -1; font-size: 14.1px; line-height: 20px; padding-top: 8px; border-top: 1px solid var(--color-border-light); }
 @media (hover: hover) and (pointer: fine) {
   .brand:hover { opacity: .7; }
   .contact a:hover { border-color: var(--color-accent); }
@@ -31,8 +31,8 @@
   .contacts { padding-top: 0; }
 }
 @media (max-width: 767px) {
-  .footer { padding: 32px 0 40px; }
-  .container { grid-template-columns: minmax(0, 1fr); row-gap: 24px; }
+  .footer { padding: 20px 0 18px; }
+  .container { grid-template-columns: minmax(0, 1fr); row-gap: 16px; }
   .content { max-width: 320px; justify-self: center; }
   .copyright { font-size: 12.6px; line-height: 18px; }
 }

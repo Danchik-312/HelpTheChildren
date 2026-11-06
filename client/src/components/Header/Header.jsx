@@ -15,6 +15,17 @@ export default function Header() {
   const inputRef = useRef(null);
   const menuRef = useRef(null);
   const panelRef = useRef(null);
+  const headerRef = useRef(null);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      header.style.setProperty('--header-height', header.offsetHeight + 'px');
+    });
+    observer.observe(header);
+    return () => observer.disconnect();
+  }, []);
   const normalizedQuery = query.trim();
   const searching = normalizedQuery.length > 0;
   const searchPending = searching && (search.query !== normalizedQuery || search.status === 'loading');
@@ -68,21 +79,24 @@ export default function Header() {
     return () => { document.body.style.overflow = previousOverflow; };
   }, [panelOpen]);
 
-  return <header className={styles.header}>
+  return <header ref={headerRef} className={styles.header}>
     <a className={styles.skipLink} href="#main">Перейти к содержимому</a>
     <div className={styles.surface}>
       <Container className={styles.container}>
         <div className={styles.brand}>
-          <Link className={styles.logo} to="/" aria-label="Help The Children SKD, главная" onClick={closePanel}>
-            <img className={styles.logoImage} src={logo} alt="" />
+          <Link className={styles.logo} to="/" aria-label="Help The Children - SDK, главная" onClick={closePanel}>
+            <span className={styles.logoFrame}><img className={styles.logoImage} src={logo} alt="" /></span>
             <span className={styles.organizationName}>
-              <span>Помощь детям</span>
-              <strong>Help The Children</strong>
-              <span>Балдарга жардам</span>
+              <span>Помощь детям - СДК</span>
+              <span>Help The Children - SDK</span>
+              <span>Балдарга жардам - СДК</span>
             </span>
           </Link>
-          <span className={styles.caption}>помощь детям<br />и семьям</span>
         </div>
+        <p className={styles.caption}>
+          <span>Общественный благотворительный фонд</span>
+          <span>Помощь детям, страдающим онкологическими, гематологическими и иммунологическими заболеваниями</span>
+        </p>
         <div className={styles.actions}>
           <div className={styles.primaryActions}>
             <button ref={menuRef} className={classNames(styles.menuButton, { [styles.active]: panelOpen })} aria-expanded={panelOpen} aria-controls="header-panel" aria-label={panelOpen ? 'Закрыть меню' : 'Открыть меню'} onClick={() => panelOpen ? closePanel() : setPanelOpen(true)}>

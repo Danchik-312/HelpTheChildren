@@ -18,10 +18,12 @@ afterEach(() => vi.unstubAllGlobals());
 
 test('keeps the brand and a single menu trigger without a separate search button', async () => {
   render(<Header />);
-  const brand = screen.getByRole('link', { name: 'Help The Children SKD, главная' });
-  expect(brand).toHaveTextContent('Помощь детям');
-  expect(brand).toHaveTextContent('Help The Children');
-  expect(brand).toHaveTextContent('Балдарга жардам');
+  const brand = screen.getByRole('link', { name: 'Help The Children - SDK, главная' });
+  expect(brand).toHaveTextContent('Помощь детям - СДК');
+  expect(brand).toHaveTextContent('Help The Children - SDK');
+  expect(brand).toHaveTextContent('Балдарга жардам - СДК');
+  expect(screen.getByText('Общественный благотворительный фонд')).toBeInTheDocument();
+  expect(screen.getByText('Помощь детям, страдающим онкологическими, гематологическими и иммунологическими заболеваниями')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Открыть меню' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Поиск по разделам' })).not.toBeInTheDocument();
   expect(screen.queryByRole('searchbox')).not.toBeInTheDocument();

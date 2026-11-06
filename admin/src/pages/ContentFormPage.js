@@ -5,6 +5,7 @@ import MediaPicker from '../components/MediaPicker';
 import PrivateMediaPreview from '../components/PrivateMediaPreview';
 import RichTextEditor from '../components/RichTextEditor';
 import { editableData, normalizeDocument, resourceDefinitions } from './contentResources';
+import { contentFormError } from './contentFormError';
 import styles from './Resource.module.css';
 
 const nullable = value => value?.trim() || null;
@@ -13,15 +14,22 @@ function ResourceFields({ resource, form, setField, disabled }) {
   const definition = resourceDefinitions[resource];
   return <div className={styles.formGrid}>
     {resource === 'projects' && <><label><span>Тип</span><select value={form.kind} onChange={e => setField('kind', e.target.value)}><option value="PROJECT">Проект</option><option value="PROGRAM">Программа</option><option value="INITIATIVE">Инициатива</option></select></label><label><span>Состояние проекта</span><select value={form.projectState} onChange={e => setField('projectState', e.target.value)}><option value="PLANNED">Планируется</option><option value="ACTIVE">Активен</option><option value="COMPLETED">Завершён</option></select></label></>}
-    {resource === 'pages' && <label><span>Группа</span><select value={form.group} onChange={e => setField('group', e.target.value)}><option value="ABOUT">О нас</option><option value="GIVE_HELP">Хочу помочь</option><option value="GET_HELP">Нужна помощь</option><option value="GENERAL">Общее</option></select></label>}
-    {resource === 'children' && <label><span>Публичное имя</span><input required maxLength="120" value={form.publicDisplayName} onChange={e => setField('publicDisplayName', e.target.value)} /></label>}
+    {resource === 'pages' && <label><span>Группа</span><select required value={form.group} onChange={e => setField('group', e.target.value)}><option value="ABOUT">О нас</option><option value="GIVE_HELP">Хочу помочь</option><option value="GET_HELP">Нужна помощь</option><option value="GENERAL">Общее</option></select></label>}
+    {resource === 'children' && <div>
+      <label><span>Публичное имя</span><input aria-describedby="child-public-name-hint" maxLength="120" value={form.publicDisplayName} onChange={e => setField('publicDisplayName', e.target.value)} /></label>
+      <small id="child-public-name-hint" className={styles.fieldHint}>Нужно перед публикацией карточки.</small>
+    </div>}
     <label><span>Slug</span><input required maxLength="160" value={form.slug} onChange={e => setField('slug', e.target.value)} placeholder="nazvanie" /></label>
     <label className={styles.full}><span>Заголовок</span><input required maxLength="240" value={form.title} onChange={e => setField('title', e.target.value)} /></label>
-    <label className={styles.full}><span>{resource === 'pages' ? 'Описание' : 'Краткое описание'}</span><textarea required maxLength="1000" rows="4" value={form[definition.summaryField]} onChange={e => setField(definition.summaryField, e.target.value)} /></label>
-    {resource === 'children' && <><label><span>Публичное обозначение возраста</span><input maxLength="80" value={form.publicAgeLabel || ''} onChange={e => setField('publicAgeLabel', nullable(e.target.value))} /></label><label><span>Порядок</span><input type="number" min="0" max="100000" value={form.sortOrder} onChange={e => setField('sortOrder', Number(e.target.value))} /></label><label className={styles.full}><span>Разрешённое описание здоровья</span><textarea maxLength="1000" value={form.approvedHealthSummary || ''} onChange={e => setField('approvedHealthSummary', nullable(e.target.value))} /></label><label className={styles.full}><span>Причина поддержки</span><textarea required maxLength="1000" value={form.supportReason} onChange={e => setField('supportReason', e.target.value)} /></label></>}
+    <label className={styles.full}><span>{resource === 'pages' ? 'Описание' : 'Краткое описание'}</span><textarea maxLength="1000" rows="4" value={form[definition.summaryField]} onChange={e => setField(definition.summaryField, e.target.value)} /></label>
+    {resource === 'children' && <><label><span>Публичное обозначение возраста</span><input maxLength="80" value={form.publicAgeLabel || ''} onChange={e => setField('publicAgeLabel', nullable(e.target.value))} /></label><label><span>Порядок</span><input type="number" min="0" max="100000" value={form.sortOrder} onChange={e => setField('sortOrder', Number(e.target.value))} /></label><label className={styles.full}><span>Разрешённое описание здоровья</span><textarea maxLength="1000" value={form.approvedHealthSummary || ''} onChange={e => setField('approvedHealthSummary', nullable(e.target.value))} /></label><label className={styles.full}><span>Причина поддержки</span><textarea maxLength="1000" value={form.supportReason} onChange={e => setField('supportReason', e.target.value)} /></label></>}
     {resource === 'projects' && <><label><span>Начало</span><input type="date" value={toDateInput(form.startsAt)} onChange={e => setField('startsAt', e.target.value || null)} /></label><label><span>Завершение</span><input type="date" value={toDateInput(form.endsAt)} onChange={e => setField('endsAt', e.target.value || null)} /></label></>}
     {['projects', 'pages'].includes(resource) && <label><span>Порядок</span><input type="number" min="0" max="100000" value={form.sortOrder} onChange={e => setField('sortOrder', Number(e.target.value))} /></label>}
-    <div className={styles.full}><span className={styles.fieldLabel}>{resource === 'children' ? 'История ребёнка' : 'Содержание'}</span><RichTextEditor value={form[definition.bodyField]} onChange={value => setField(definition.bodyField, value)} disabled={disabled} /><small className={styles.fieldHint}>Хранится как структурированный JSON; произвольный HTML не принимается.</small></div>
+    <div className={styles.full}><span className={styles.fieldLabel}>{resource === 'children' ? 'История ребёнка' : 'Содержание'}</span><RichTextEditor value={form[definition.bodyField]} onChange={value => setField(definition.bodyField, value)} disabled={disabled} /><small className={styles.fieldHint}>Хранится как структурированный JSON; произвольный HTML не принимается.</small>
+      {resource === 'pages' && form.group === 'GENERAL' && form.slug === 'partners' && <small className={styles.fieldHint}>
+        Укажите название каждого партнёра отдельным заголовком. Сразу после заголовка можно вставить логотип из медиатеки, если его принадлежность организации подтверждена.
+      </small>}
+    </div>
     {resource === 'stories' && <label className={`${styles.full} ${styles.check}`}><input type="checkbox" disabled={disabled || Boolean(form.consentConfirmedAt)} checked={Boolean(form.consentConfirmed)} onChange={e => setField('consentConfirmed', e.target.checked)} /><span>{form.consentConfirmedAt ? 'Согласие на публикацию истории подтверждено' : 'Подтверждаю наличие согласия на публикацию истории'}</span></label>}
   </div>;
 }
@@ -67,7 +75,7 @@ export default function ContentFormPage({ resource }) {
   const run = async action => {
     setError(''); setConflict(false); setState('saving');
     try { const item = await action(); if (item) { const next = markSaved(item); setCover(next.coverMedia || cover); } setState('ready'); return item; }
-    catch (err) { setState('ready'); setError(err.message); setConflict(err.code === 'VERSION_CONFLICT'); return null; }
+    catch (err) { setState('ready'); setError(contentFormError(err)); setConflict(err.code === 'VERSION_CONFLICT'); return null; }
   };
   const save = async event => {
     event.preventDefault();

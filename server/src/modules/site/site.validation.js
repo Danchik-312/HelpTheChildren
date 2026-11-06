@@ -14,7 +14,13 @@ export function isSafeContactHref(value) {
 
 const safeContactHref = z.string().trim().max(1000).refine(isSafeContactHref, 'Ссылка должна быть внутренней или использовать HTTPS, mailto либо tel.');
 
+const hexColor = z.string()
+  .regex(/^#[0-9a-f]{6}$/i, 'Цвет должен быть в формате #RRGGBB.')
+  .transform(value => value.toUpperCase());
+
 export const organizationSchema = z.object({
+  brandColor: hexColor.optional(),
+  accentColor: hexColor.optional(),
   displayName: z.string().trim().min(1).max(200),
   shortDescription: z.string().trim().max(1000).nullable().optional(),
   description: structuredContentSchema.nullable().optional(),

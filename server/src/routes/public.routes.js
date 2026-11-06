@@ -9,9 +9,11 @@ import { sitePublicRouter } from '../modules/site/site.routes.js';
 
 export const publicRouter = Router();
 const infoPageRouteBases = Object.freeze({ ABOUT: '/who-we', GIVE_HELP: '/give-help', GET_HELP: '/get-help', GENERAL: '/information' });
-export const infoPagePublicUrl = page => infoPageRouteBases[page.group]
-  ? `${infoPageRouteBases[page.group]}/${page.slug}`
-  : null;
+export function infoPagePublicUrl(page) {
+  if (page.group === 'GENERAL' && page.slug === 'partners') return '/partners';
+  const base = infoPageRouteBases[page.group];
+  return base ? `${base}/${page.slug}` : null;
+}
 publicRouter.use('/hero-slides', heroPublicRouter);
 publicRouter.use('/media', mediaPublicRouter);
 publicRouter.use('/categories', categoriesPublicRouter);
@@ -28,6 +30,7 @@ publicRouter.get('/navigation', (_req, res) => res.json({ data: { items: [
   { key: 'children', label: 'Дети', url: '/children' }, { key: 'publications', label: 'Публикации', url: '/publications' },
   { key: 'stories', label: 'Истории', url: '/stories' },
   { key: 'information', label: 'Информация', url: '/information' },
+  { key: 'partners', label: 'Партнёры', url: '/partners' },
 ] } }));
 
 publicRouter.get('/search', asyncHandler(async (req, res) => {

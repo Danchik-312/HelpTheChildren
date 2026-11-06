@@ -62,8 +62,10 @@ function renderNode(node, key) {
     }
     case 'bulletList': return <ul key={key}>{children}</ul>;
     case 'orderedList': {
-      if (node.attrs !== undefined && (!onlyKeys(node.attrs, ['start']) || !Number.isInteger(node.attrs.start) || node.attrs.start < 1 || node.attrs.start > 1_000_000)) return null;
-      return <ol key={key} start={node.attrs?.start}>{children}</ol>;
+      if (node.attrs !== undefined && (!onlyKeys(node.attrs, ['start', 'type']) || !Number.isInteger(node.attrs.start) || node.attrs.start < 1 || node.attrs.start > 1_000_000)) return null;
+      const type = node.attrs?.type;
+      if (type != null && !['1', 'a', 'A', 'i', 'I'].includes(type)) return null;
+      return <ol key={key} start={node.attrs?.start} type={type ?? undefined}>{children}</ol>;
     }
     case 'listItem': return <li key={key}>{children}</li>;
     case 'blockquote': return <blockquote key={key}>{children}</blockquote>;

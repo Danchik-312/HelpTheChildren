@@ -21,16 +21,30 @@ export default function ContentDetailPage({ collection, backTo, backLabel }) {
   ].filter(Boolean);
   const textDetails = [...new Set([entry.summary, entry.supportReason].filter(value => typeof value === 'string' && value.trim()))];
   const structuredBody = entry.body || entry.instructions;
+  const photos = collection === 'publications' ? entry.sidePhotos || [] : [];
+  const cover = entry.image && !photos.some(photo => photo.url === entry.image)
+    ? { url: entry.image, altText: entry.imageAlt || '' }
+    : null;
+  const gallery = cover ? [cover, ...photos] : photos;
+  const articleClass = gallery.length ? styles.article + ' ' + styles.withGallery : styles.article;
   return <>
-    <PageIntro title={title} image={entry.image} imageAlt={entry.imageAlt || ''} preserveImageRatio={collection === 'publications'}>
+    <PageIntro title={title}>
       {entry.description}
     </PageIntro>
-    <Container as="article" className={styles.article}>
-      {details.length > 0 && <dl className={styles.details}>{details.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
-      {structuredBody && <StructuredContent content={structuredBody} className={styles.body} />}
-      {textDetails.map((paragraph, index) => <p className={styles.body} key={`${index}-${paragraph}`}>{paragraph}</p>)}
-      {!structuredBody && textDetails.length === 0 && <p className={styles.body}>Для этого материала нет дополнительного текста.</p>}
-      <Link className={styles.back} to={backTo}>← {backLabel}</Link>
+    <Container as="article" className={articleClass}>
+      {gallery.length > 0 && <aside className={styles.gallery} aria-label="Фотографии материала">
+        {gallery.map(photo => <figure key={photo.mediaId || photo.url}>
+          <img src={photo.url} alt={photo.altText} loading="lazy" decoding="async" />
+          {photo.caption && <figcaption>{photo.caption}</figcaption>}
+        </figure>)}
+      </aside>}
+      <div className={styles.text}>
+        {details.length > 0 && <dl className={styles.details}>{details.map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+        {structuredBody && <StructuredContent content={structuredBody} className={styles.body} />}
+        {textDetails.map((paragraph, index) => <p className={styles.body} key={`${index}-${paragraph}`}>{paragraph}</p>)}
+        {!structuredBody && textDetails.length === 0 && <p className={styles.body}>Для этого материала нет дополнительного текста.</p>}
+        <Link className={styles.back} to={backTo}>← {backLabel}</Link>
+      </div>
     </Container>
   </>;
 }

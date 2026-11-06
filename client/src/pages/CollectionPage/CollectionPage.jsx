@@ -8,7 +8,7 @@ import Pagination from '../../components/Pagination/Pagination';
 export default function CollectionPage({ title, description, collection, basePath, emptyMessage }) {
   const [page, setPage] = useState(1);
   const { data, meta, loading, error } = usePaginatedCollection(collection, { page, pageSize: 12 });
-  const items = data.map(item => ({ ...item, to: `${basePath}/${item.slug}` }));
+  const items = data.map(item => ({ ...item, to: item.to || `${basePath}/${item.slug}` }));
   return <>
     <PageIntro title={title}>{description}</PageIntro>
     {loading || error || items.length === 0

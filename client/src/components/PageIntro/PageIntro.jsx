@@ -10,10 +10,12 @@ export default function PageIntro({ title, children, action, image, imageAlt = '
 
   return <section ref={ref} className={classNames(styles.section, { [styles.withImage]: image })}>
     <Container className={classNames(styles.container, { [styles.compact]: compact, [styles.visible]: isInView || reducedMotion })}>
-      <h1 className={styles.title}>{title}</h1>
+      <div className={styles.copy}>
+        <h1 className={styles.title}>{title}</h1>
+        {children && <p className={styles.description}>{children}</p>}
+        {action && <div className={styles.action}>{action}</div>}
+      </div>
       {image && <img className={classNames(styles.image, { [styles.naturalImage]: preserveImageRatio })} src={image} alt={imageAlt} />}
-      {children && <p className={styles.description}>{children}</p>}
-      {action && <div className={styles.action}>{action}</div>}
     </Container>
   </section>;
 }

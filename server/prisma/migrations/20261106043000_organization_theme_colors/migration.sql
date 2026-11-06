@@ -1,0 +1,3 @@
+ALTER TABLE "OrganizationProfile"
+  ADD COLUMN "brandColor" TEXT NOT NULL DEFAULT '#DC6601',
+  ADD COLUMN "accentColor" TEXT NOT NULL DEFAULT '#BFFF00';

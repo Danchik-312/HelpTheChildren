@@ -4,7 +4,7 @@ import express from 'express';
 import request from 'supertest';
 import { errorHandler } from '../src/middleware/error-handler.js';
 import { validate } from '../src/middleware/validate.js';
-import { schemas } from '../src/modules/content/content.validation.js';
+import { patchSchemas, schemas } from '../src/modules/content/content.validation.js';
 
 const validBase = {
   kind: 'ARTICLE',
@@ -68,3 +68,43 @@ for (const [name, body, expectedField] of [
     assert.ok(response.body.error.fields[expectedField], JSON.stringify(response.body.error.fields));
   });
 }
+
+test('accepts minimal content payloads and still requires an information page group', () => {
+  const base = { title: 'Материал', slug: 'material' };
+  const variants = [
+    ['publications', base, 'excerpt', 'body'],
+    ['stories', base, 'excerpt', 'body'],
+    ['children', base, 'summary', 'storyBody'],
+    ['projects', base, 'summary', 'body'],
+    ['pages', { ...base, group: 'GENERAL' }, 'description', 'body'],
+  ];
+  for (const [resource, input, summaryField, bodyField] of variants) {
+    const parsed = schemas[resource].parse(input);
+    assert.equal(parsed[summaryField], '');
+    assert.deepEqual(parsed[bodyField], { type: 'doc', content: [{ type: 'paragraph' }] });
+    assert.equal(schemas[resource].safeParse({ ...input, title: '' }).success, false);
+    assert.equal(schemas[resource].safeParse({ ...input, slug: '' }).success, false);
+    assert.deepEqual(patchSchemas[resource].parse({ title: 'Обновление', version: 1 }), { title: 'Обновление', version: 1 });
+    assert.deepEqual(patchSchemas[resource].parse({ [summaryField]: '  ', version: 1 }), { [summaryField]: '', version: 1 });
+  }
+  assert.equal(schemas.pages.safeParse(base).success, false);
+  assert.equal(schemas.children.parse(base).publicDisplayName, '');
+  assert.equal(schemas.children.parse(base).supportReason, '');
+  assert.equal(schemas.publications.parse(base).kind, 'NEWS');
+  assert.equal(schemas.projects.parse(base).kind, 'PROJECT');
+});
+
+test('an information page with an empty description accepts Tiptap numbered lists', () => {
+  const page = { title: 'О фонде', slug: 'o-fonde', group: 'GENERAL', sortOrder: 0, description: '',
+    body: { type: 'doc', content: [{
+      type: 'orderedList', attrs: { start: 1, type: null },
+      content: [{ type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Пункт' }] }] }],
+    }] } };
+  assert.equal(schemas.pages.safeParse(page).success, true);
+  assert.equal(patchSchemas.pages.safeParse({ ...page, version: 1 }).success, true);
+  const badSlug = schemas.pages.safeParse({ ...page, slug: 'о-фонде' });
+  assert.equal(badSlug.success, false);
+  assert.match(badSlug.error.issues[0].message, /латинские буквы/);
+  page.body.content[0].attrs.type = 'unexpected';
+  assert.equal(schemas.pages.safeParse(page).success, false);
+});

@@ -29,4 +29,5 @@ test('search page URLs only target existing React routes', () => {
   assert.equal(infoPagePublicUrl({ group: 'GIVE_HELP', slug: 'volunteer' }), '/give-help/volunteer');
   assert.equal(infoPagePublicUrl({ group: 'GET_HELP', slug: 'application' }), '/get-help/application');
   assert.equal(infoPagePublicUrl({ group: 'GENERAL', slug: 'documents' }), '/information/documents');
+  assert.equal(infoPagePublicUrl({ group: 'GENERAL', slug: 'partners' }), '/partners');
 });

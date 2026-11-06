@@ -124,3 +124,51 @@ test('public site response neutralizes unsafe legacy links and organization cont
   assert.equal(result.organization.description, null);
   assert.equal(result.contacts[0].href, null);
 });
+
+test('organization colors use normalized six-digit HEX and remain optional', () => {
+  const organization = { displayName: 'Фонд' };
+  assert.deepEqual(organizationSchema.parse(organization), organization);
+  assert.deepEqual(organizationSchema.parse({ ...organization, brandColor: '#0a1b2c', accentColor: '#fedcba' }), {
+    ...organization, brandColor: '#0A1B2C', accentColor: '#FEDCBA',
+  });
+  for (const value of ['#abc', '#12345678', '#12zzff', 'url(example.test)', null]) {
+    assert.equal(organizationSchema.safeParse({ ...organization, brandColor: value }).success, false);
+    assert.equal(organizationSchema.safeParse({ ...organization, accentColor: value }).success, false);
+  }
+});
+
+test('site settings persist colors through the audited update and expose them publicly', async t => {
+  const { prisma } = await import('../src/db/prisma.js');
+  const user = { id: 'admin-id' };
+  const { updateOrganization, publicGet } = await import('../src/modules/site/site.service.js');
+  const input = organizationSchema.parse({ displayName: 'Фонд', brandColor: '#0a1b2c', accentColor: '#fedcba' });
+  let stored = { id: 'main', displayName: 'Фонд', brandColor: '#DC6601', accentColor: '#BFFF00' };
+  const audits = [];
+  function stub(target, key, implementation) {
+    const original = target[key];
+    target[key] = implementation;
+    t.after(() => { target[key] = original; });
+  }
+  stub(prisma, '$transaction', async query => Array.isArray(query)
+    ? Promise.all(query)
+    : query({
+      organizationProfile: {
+        upsert: async ({ update }) => (stored = { ...stored, ...update }),
+      },
+      auditLog: { create: async ({ data }) => audits.push(data) },
+    }));
+  stub(prisma.organizationProfile, 'findUnique', async ({ select }) =>
+    Object.fromEntries(Object.keys(select).map(key => [key, stored[key]])));
+  stub(prisma.contactEntry, 'findMany', async () => []);
+  stub(prisma.homeBlock, 'findMany', async () => []);
+
+  await updateOrganization(input, user, 'request-id');
+  await updateOrganization(organizationSchema.parse({ displayName: 'Новое название' }), user, 'next-request');
+  const { organization } = await publicGet();
+  assert.equal(organization.displayName, 'Новое название');
+  assert.equal(organization.brandColor, '#0A1B2C');
+  assert.equal(organization.accentColor, '#FEDCBA');
+  assert.equal(organization.updatedById, undefined);
+  assert.equal(audits.length, 2);
+  assert.equal(audits[0].actorId, user.id);
+});

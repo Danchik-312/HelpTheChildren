@@ -5,7 +5,10 @@ import { useAuth } from '../auth/AuthContext';
 import MediaPicker from '../components/MediaPicker';
 import PrivateMediaPreview from '../components/PrivateMediaPreview';
 import RichTextEditor from '../components/RichTextEditor';
+import { contentFormError } from './contentFormError';
 import styles from './Resource.module.css';
+
+const MAX_SIDE_PHOTOS = 30;
 
 export const emptyBody = { type: 'doc', content: [{ type: 'paragraph' }] };
 
@@ -43,7 +46,7 @@ export function normalizeBody(body) {
 
 function normalizePublication(item) {
   const categoryIds = Array.isArray(item.categoryIds) ? item.categoryIds : (item.categories || []).map(link => link.category?.id || link.id).filter(Boolean);
-  return { ...item, categoryIds, body: normalizeBody(item.body) };
+  return { ...item, categoryIds, body: normalizeBody(item.body), sidePhotos: item.sidePhotos ?? [] };
 }
 
 const editableData = form => ({
@@ -54,6 +57,9 @@ const editableData = form => ({
   body: normalizeBody(form.body),
   coverMediaId: form.coverMediaId || null,
   categoryIds: [...(form.categoryIds || [])].sort(),
+  sidePhotos: (form.sidePhotos || []).map(({ mediaId, altText, caption }) => ({
+    mediaId, altText: altText ?? '', caption: caption ?? '',
+  })),
 });
 
 export const publicationSignature = form => JSON.stringify(canonicalizeJson(editableData(form)));
@@ -63,11 +69,11 @@ export default function PublicationFormPage() {
   const [params] = useSearchParams();
   const navigate = useNavigate();
   const { canPublish } = useAuth();
-  const [form, setForm] = useState({ kind: params.get('kind') === 'ARTICLE' ? 'ARTICLE' : 'NEWS', title: '', slug: '', excerpt: '', body: emptyBody, coverMediaId: null, categoryIds: [] });
+  const [form, setForm] = useState({ kind: params.get('kind') === 'ARTICLE' ? 'ARTICLE' : 'NEWS', title: '', slug: '', excerpt: '', body: emptyBody, coverMediaId: null, categoryIds: [], sidePhotos: [] });
   const [categories, setCategories] = useState([]);
   const [categoriesError, setCategoriesError] = useState('');
   const [cover, setCover] = useState(null);
-  const [picker, setPicker] = useState(false);
+  const [picker, setPicker] = useState(null);
   const [state, setState] = useState(id ? 'loading' : 'ready');
   const [error, setError] = useState('');
   const [conflict, setConflict] = useState(false);
@@ -123,6 +129,21 @@ export default function PublicationFormPage() {
   }, [isDirty]);
 
   const setField = (name, value) => setForm(current => ({ ...current, [name]: value }));
+  const changeSidePhotos = change => setForm(current => ({ ...current, sidePhotos: change(current.sidePhotos) }));
+  const updateSidePhoto = (mediaId, field, value) => changeSidePhotos(photos =>
+    photos.map(photo => photo.mediaId === mediaId ? { ...photo, [field]: value } : photo),
+  );
+  const moveSidePhoto = (index, step) => changeSidePhotos(photos => {
+    const reordered = [...photos];
+    const destination = index + step;
+    [reordered[index], reordered[destination]] = [reordered[destination], reordered[index]];
+    return reordered;
+  });
+  const addSidePhoto = media => changeSidePhotos(photos => {
+    if (photos.length >= MAX_SIDE_PHOTOS || photos.some(photo => photo.mediaId === media.id)) return photos;
+    return [...photos, { mediaId: media.id, media, altText: media.defaultAlt || '', caption: '' }];
+  });
+
   const payload = () => ({ ...editableData(form), ...(id && { version: form.version }) });
 
   const save = async event => {
@@ -138,7 +159,7 @@ export default function PublicationFormPage() {
       if (!id) navigate(`/publications/${saved.id}/edit`, { replace: true });
     } catch (err) {
       setState('ready');
-      setError(err.message);
+      setError(contentFormError(err));
       setConflict(err.code === 'VERSION_CONFLICT');
     }
   };
@@ -150,7 +171,7 @@ export default function PublicationFormPage() {
       const updated = await (publish ? publicationsApi.publish(id, form.version) : publicationsApi.unpublish(id, form.version));
       setForm(current => ({ ...current, ...updated }));
     } catch (err) {
-      setError(err.message);
+      setError(contentFormError(err));
       setConflict(err.code === 'VERSION_CONFLICT');
     }
   };
@@ -173,10 +194,32 @@ export default function PublicationFormPage() {
             <label><span>Тип</span><select value={form.kind} onChange={event => setField('kind', event.target.value)}><option value="NEWS">Новость</option><option value="ARTICLE">Статья</option></select></label>
             <label><span>Slug</span><input required maxLength="160" value={form.slug} onChange={event => setField('slug', event.target.value)} placeholder="nazvanie-materiala" /></label>
             <label className={styles.full}><span>Заголовок</span><input required maxLength="240" value={form.title} onChange={event => setField('title', event.target.value)} /></label>
-            <label className={styles.full}><span>Краткое описание</span><textarea required maxLength="1000" rows="4" value={form.excerpt} onChange={event => setField('excerpt', event.target.value)} /></label>
+            <label className={styles.full}><span>Краткое описание</span><textarea maxLength="1000" rows="4" value={form.excerpt} onChange={event => setField('excerpt', event.target.value)} /></label>
             <fieldset className={styles.full}><legend>Категории</legend>{categoriesError ? <p role="alert">{categoriesError}</p> : categories.length ? categories.map(category => <label key={category.id}><input type="checkbox" checked={(form.categoryIds || []).includes(category.id)} onChange={event => setField('categoryIds', event.target.checked ? [...(form.categoryIds || []), category.id] : (form.categoryIds || []).filter(idValue => idValue !== category.id))} /> {category.name}</label>) : <small>Категории пока не созданы.</small>}</fieldset>
             <div className={styles.full}><span className={styles.fieldLabel}>Содержание</span><RichTextEditor value={form.body} onChange={body => setField('body', body)} disabled={state === 'saving'} /><small className={styles.fieldHint}>Содержимое сохраняется как структурированный JSON. HTML-код не принимается.</small></div>
           </div>
+          <fieldset className={styles.sidePhotos} disabled={state === 'saving'}>
+            <legend>Фотографии слева от текста</legend>
+            {form.sidePhotos.length > 0 && <ol className={styles.sidePhotoList}>
+              {form.sidePhotos.map(({ mediaId, media, altText, caption }, index) => <li key={mediaId} className={styles.sidePhoto}>
+                <div className={styles.sidePhotoMedia}>
+                  {media ? <PrivateMediaPreview media={media} className={styles.sidePhotoPreview} /> : <span>Предпросмотр недоступен</span>}
+                  <small>{media?.originalName || 'Фото ' + (index + 1)}</small>
+                </div>
+                <div className={styles.sidePhotoFields}>
+                  <label><span>Alt-текст</span><input maxLength={500} value={altText ?? ''} onChange={event => updateSidePhoto(mediaId, 'altText', event.target.value)} /></label>
+                  <label><span>Подпись</span><input maxLength={500} value={caption ?? ''} onChange={event => updateSidePhoto(mediaId, 'caption', event.target.value)} /></label>
+                  <div className={styles.sidePhotoActions}>
+                    <button className={styles.textButton} type="button" disabled={index === 0} aria-label={'Переместить фото ' + (index + 1) + ' выше'} onClick={() => moveSidePhoto(index, -1)}>Выше</button>
+                    <button className={styles.textButton} type="button" disabled={index === form.sidePhotos.length - 1} aria-label={'Переместить фото ' + (index + 1) + ' ниже'} onClick={() => moveSidePhoto(index, 1)}>Ниже</button>
+                    <button className={styles.textButton} type="button" aria-label={'Убрать фото ' + (index + 1)} onClick={() => changeSidePhotos(photos => photos.filter(photo => photo.mediaId !== mediaId))}>Убрать</button>
+                  </div>
+                </div>
+              </li>)}
+            </ol>}
+            <button className={styles.secondary} type="button" disabled={form.sidePhotos.length >= MAX_SIDE_PHOTOS} onClick={() => setPicker('sidePhoto')}>Добавить фотографию</button>
+            {form.sidePhotos.length >= MAX_SIDE_PHOTOS && <small className={styles.fieldHint}>В подборке может быть до {MAX_SIDE_PHOTOS} фотографий.</small>}
+          </fieldset>
         </section>
         <aside className={styles.panel}>
           <h2>Публикация</h2>
@@ -186,11 +229,12 @@ export default function PublicationFormPage() {
           <hr />
           <h2>Обложка</h2>
           {cover ? <PrivateMediaPreview media={cover} className={styles.coverPreview} /> : <div className={styles.coverEmpty}>Обложка не выбрана</div>}
-          <button className={styles.secondary} type="button" onClick={() => setPicker(true)}>Выбрать из медиатеки</button>
+          <button className={styles.secondary} type="button" onClick={() => setPicker('cover')}>Выбрать из медиатеки</button>
           {cover && <button className={styles.textButton} type="button" onClick={() => { setCover(null); setField('coverMediaId', null); }}>Убрать обложку</button>}
         </aside>
       </form>
-      {picker && <MediaPicker value={form.coverMediaId} onClose={() => setPicker(false)} onChange={item => { setCover(item); setField('coverMediaId', item.id); }} />}
+      {picker === 'cover' && <MediaPicker value={form.coverMediaId} onClose={() => setPicker(null)} onChange={item => { setCover(item); setField('coverMediaId', item.id); }} />}
+      {picker === 'sidePhoto' && <MediaPicker title="Выберите фотографию для публикации" readyOnly excludedIds={form.sidePhotos.map(photo => photo.mediaId)} onClose={() => setPicker(null)} onChange={addSidePhoto} />}
     </div>
   );
 }

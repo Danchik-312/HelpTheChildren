@@ -15,6 +15,17 @@ describe('StructuredContent', () => {
     expect(screen.getByText('Цитата').closest('blockquote')).toBeInTheDocument();
   });
 
+  test.each([null, 'I'])('renders a Tiptap numbered list with type %s', type => {
+    render(<StructuredContent content={{ type: 'doc', content: [{
+      type: 'orderedList', attrs: { start: 3, type },
+      content: [{ type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Пункт' }] }] }],
+    }] }} />);
+    const list = screen.getByRole('list');
+    expect(list).toHaveAttribute('start', '3');
+    if (type) expect(list).toHaveAttribute('type', type);
+    else expect(list).not.toHaveAttribute('type');
+  });
+
   test('renders inline media via the public media route with alt text and responsive image class', () => {
     const mediaId = 'd9428888-122b-4a3d-9a54-4f4b1f5e39aa';
     const { container } = render(<StructuredContent content={{ type: 'doc', content: [{ type: 'paragraph', content: [{ type: 'image', attrs: { mediaId, alt: 'Ребёнок рисует' } }] }] }} />);

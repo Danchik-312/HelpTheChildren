@@ -1,8 +1,9 @@
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import SupportLink from './components/SupportLink/SupportLink';
 import ScrollToTop from './components/ScrollToTop/ScrollToTop';
+import SiteTheme from './components/SiteTheme';
 import HomePage from './pages/HomePage/HomePage';
 import GiveHelpPage from './pages/GiveHelpPage/GiveHelpPage';
 import GetHelpPage from './pages/GetHelpPage/GetHelpPage';
@@ -11,10 +12,12 @@ import WhoWePage from './pages/WhoWePage/WhoWePage';
 import PublicationsPage from './pages/PublicationsPage/PublicationsPage';
 import CollectionPage from './pages/CollectionPage/CollectionPage';
 import ContentDetailPage from './pages/ContentDetailPage/ContentDetailPage';
+import PartnersPage from './pages/PartnersPage/PartnersPage';
 import NotFoundPage from './pages/NotFoundPage/NotFoundPage';
 
 export default function App() {
   return <>
+    <SiteTheme />
     <ScrollToTop />
     <Header />
     <main id="main">
@@ -35,6 +38,8 @@ export default function App() {
         <Route path="/get-help/:slug" element={<ContentDetailPage collection="getHelpDirections" backTo="/get-help" backLabel="К разделу помощи" />} />
         <Route path="/who-we/:slug" element={<ContentDetailPage collection="organizationSections" backTo="/who-we" backLabel="Об организации" />} />
         <Route path="/information" element={<CollectionPage title="Информация" description="Информационные материалы организации." collection="generalPages" basePath="/information" emptyMessage="Информационные материалы пока не опубликованы." />} />
+        <Route path="/partners" element={<PartnersPage />} />
+        <Route path="/information/partners" element={<Navigate to="/partners" replace />} />
         <Route path="/information/:slug" element={<ContentDetailPage collection="generalPages" backTo="/information" backLabel="К информационным материалам" />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

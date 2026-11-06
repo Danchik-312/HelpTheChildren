@@ -67,7 +67,7 @@ export async function upsertBlock(input, user, requestId) {
 
 export async function publicGet() {
   const [organization, contacts, blocks] = await prisma.$transaction([
-    prisma.organizationProfile.findUnique({ where: { id: 'main' }, select: { displayName: true, shortDescription: true, description: true, logoPath: true } }),
+    prisma.organizationProfile.findUnique({ where: { id: 'main' }, select: { displayName: true, shortDescription: true, description: true, logoPath: true, brandColor: true, accentColor: true } }),
     prisma.contactEntry.findMany({ where: { isPublic: true }, select: { id: true, type: true, label: true, value: true, href: true, sortOrder: true }, orderBy: { sortOrder: 'asc' } }),
     prisma.homeBlock.findMany({ where: { enabled: true }, select: { key: true, enabled: true, position: true, itemLimit: true, heading: true, description: true, config: true }, orderBy: { position: 'asc' } }),
   ]);
